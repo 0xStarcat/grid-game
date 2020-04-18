@@ -3,7 +3,7 @@ export default class TurnKeeper {
     this.scene = scene;
     this.participants = participants;
     this.turnOwner = participants[0]; // who's turn it is
-    this.turnCount = 0;
+    this.turnCount = 1;
     this.turnIndicators = []; // UI indicators for sprites
   }
 
@@ -12,32 +12,13 @@ export default class TurnKeeper {
   }
 
   beginTurn() {
-    // Class CurrentActorIndicator
-    const rect = this.scene.mapRenderer.addRectangleOutline(
-      this.turnOwner.currentTile.pixelX,
-      this.turnOwner.currentTile.pixelY,
-      "0xefc53f"
-    );
-
-    this.scene.tweens.add({
-      targets: rect,
-      scaleX: 0.8,
-      scaleY: 0.8,
-      yoyo: true,
-      repeat: -1,
-      ease: "Sine.easeInOut",
-      repeatDelay: 4000,
-    });
-
-    this.turnIndicators.push(rect);
+    this.turnOwner.addTurnIndicator();
   }
 
   endTurn() {}
 
   afterTurn() {
-    this.turnIndicators.forEach((indicator) => {
-      indicator.destroy();
-    });
+    this.turnOwner.turnIndicator.destroy();
   }
 
   beginTrackingTurns() {

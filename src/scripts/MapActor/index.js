@@ -26,6 +26,7 @@ export default class MapActor {
     this.spritesheetName = spritesheetName;
     this.spritesheetIndex = spritesheetIndex;
     this.mapRenderer = mapRenderer;
+    this.turnIndicator; // UI indicator for indicating it's this actor's turn
   }
 
   get currentTile() {
@@ -48,6 +49,7 @@ export default class MapActor {
     if (newTile.collides) return;
     this.mapRenderer.handleMovementCollision(oldTile, newTile);
     this.sprite.y = moveY;
+    this.updateTurnIndicator();
   }
 
   moveRight() {
@@ -60,6 +62,7 @@ export default class MapActor {
 
     this.mapRenderer.handleMovementCollision(oldTile, newTile);
     this.sprite.x = moveX;
+    this.updateTurnIndicator();
   }
 
   moveDown() {
@@ -70,6 +73,7 @@ export default class MapActor {
 
     this.mapRenderer.handleMovementCollision(oldTile, newTile);
     this.sprite.y = moveY;
+    this.updateTurnIndicator();
   }
 
   moveLeft() {
@@ -82,5 +86,33 @@ export default class MapActor {
 
     this.mapRenderer.handleMovementCollision(oldTile, newTile);
     this.sprite.x = moveX;
+    this.updateTurnIndicator();
+  }
+
+  addTurnIndicator() {
+    // Class CurrentActorIndicator
+    const rect = this.scene.mapRenderer.addRectangleOutline(
+      this.currentTile.pixelX,
+      this.currentTile.pixelY,
+      "0xefc53f"
+    );
+
+    this.scene.tweens.add({
+      targets: rect,
+      scaleX: 0.8,
+      scaleY: 0.8,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+      repeatDelay: 4000,
+    });
+
+    this.turnIndicator = rect;
+  }
+
+  updateTurnIndicator() {
+    if (!this.turnIndicator) return;
+    this.turnIndicator.destroy();
+    this.addTurnIndicator();
   }
 }
