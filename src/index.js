@@ -10,6 +10,7 @@ const config = {
   scale: {
     width: 400,
     height: 400,
+    mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   backgroundColor: "#DFA",

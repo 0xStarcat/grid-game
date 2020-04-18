@@ -19,6 +19,8 @@ export default class Scene1 extends Phaser.Scene {
   }
 
   create() {
+    this.camera = this.cameras.main;
+
     this.mapRenderer = new MapRenderer(this, "nature-tiles", 32, 32);
     this.grid = this.add.grid(
       256 / 2 + 32,
@@ -91,7 +93,7 @@ export default class Scene1 extends Phaser.Scene {
   spawnActor(actor, mapRenderer) {
     // randomly places actor on a tile
     const randomTile = mapRenderer.randomTile(true);
-
+    this.mapRenderer.setCollisionTile(randomTile);
     return actor.spawn(randomTile.pixelX, randomTile.pixelY);
   }
 }
