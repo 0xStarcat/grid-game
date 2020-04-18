@@ -2,8 +2,9 @@ import Phaser from "phaser";
 import logoImg from "Assets/logo.png";
 import natureTiles from "Assets/nature-tileset.png";
 import characters from "Assets/knights.png";
-import MapRenderer from "Scripts/MapRenderer/index";
-import MapActor from "Scripts/MapActor/index";
+import MapRenderer from "Scripts/MapRenderer";
+import MapActor from "Scripts/MapActor";
+import TurnKeeper from "Scripts/TurnKeeper";
 
 export default class Scene1 extends Phaser.Scene {
   constructor() {
@@ -19,19 +20,11 @@ export default class Scene1 extends Phaser.Scene {
   }
 
   create() {
+    this.graphics = this.add.graphics();
+
     this.camera = this.cameras.main;
 
     this.mapRenderer = new MapRenderer(this, "nature-tiles", 32, 32);
-    this.grid = this.add.grid(
-      256 / 2 + 32,
-      256 / 2 + 32,
-      256,
-      256,
-      32,
-      32,
-      "#000",
-      0.25
-    );
 
     this.actor1 = new MapActor(
       this,
@@ -85,6 +78,13 @@ export default class Scene1 extends Phaser.Scene {
 
     this.input.keyboard.on("keydown_DOWN", (event) => {
       this.actor2.moveDown();
+    });
+
+    this.turnKeeper = new TurnKeeper(this, [this.actor1, this.actor2]);
+    this.turnKeeper.beginTrackingTurns();
+
+    this.input.keyboard.on("keydown_SPACE", (event) => {
+      this.turnKeeper.nextTurn();
     });
   }
 

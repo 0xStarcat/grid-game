@@ -9,19 +9,25 @@ export default class MapRenderer {
 
     this.map = this.createMap();
     this.level = this.createLevel();
-    this.tiles = this.createTileset(this.map, this.tileImageName);
-    this.layers = [this.createLayer(this.map, this.tiles)];
+    this.tileSet = this.createTileset(this.map, this.tileImageName);
+    this.layers = [this.createLayer(this.map, this.tileSet)];
+    this.currentLayer = this.layers[0];
+    this.tiles = this.getTiles();
 
     // sets stone  borders as collidable
     this.map.setCollision([75, 76, 77, 95, 97, 115, 116, 117], true);
+    // show grid
+    this.moveableGrid = this.createMoveableGrid();
   }
 
   createMap() {
-    return this.scene.make.tilemap({
+    const map = this.scene.make.tilemap({
       data: this.createLevel(),
       tileWidth: this.tileWidth,
       tileHeight: this.tileHeight,
     });
+
+    return map;
   }
 
   createLevel() {
@@ -121,32 +127,32 @@ export default class MapRenderer {
   }
 
   currentTile(x, y) {
-    return this.layers[0].getTileAtWorldXY(x, y);
+    return this.currentLayer.getTileAtWorldXY(x, y);
   }
 
   topTile(currentTile) {
-    return this.layers[0].getTileAtWorldXY(
+    return this.currentLayer.getTileAtWorldXY(
       currentTile.pixelX,
       currentTile.pixelY - this.tileHeight
     );
   }
 
   rightTile(currentTile) {
-    return this.layers[0].getTileAtWorldXY(
+    return this.currentLayer.getTileAtWorldXY(
       currentTile.pixelX + this.tileWidth,
       currentTile.pixelY
     );
   }
 
   bottomTile(currentTile) {
-    return this.layers[0].getTileAtWorldXY(
+    return this.currentLayer.getTileAtWorldXY(
       currentTile.pixelX,
       currentTile.pixelY + this.tileHeight
     );
   }
 
   leftTile(currentTile) {
-    return this.layers[0].getTileAtWorldXY(
+    return this.currentLayer.getTileAtWorldXY(
       currentTile.pixelX - this.tileWidth,
       currentTile.pixelY
     );
@@ -165,5 +171,46 @@ export default class MapRenderer {
   handleMovementCollision(oldTile, newTile) {
     this.unsetCollisionTile(oldTile);
     this.setCollisionTile(newTile);
+  }
+
+  getTiles() {
+    return [].concat.apply([], this.currentLayer.layer.data);
+  }
+
+  addRectangleOutline(tileX, tileY, color) {
+    const rect = this.scene.add.rectangle(
+      tileX + this.tileWidth / 2,
+      tileY + this.tileHeight / 2,
+      this.tileWidth,
+      this.tileHeight,
+      "0x000000",
+      0
+    );
+    rect.setStrokeStyle(1, color);
+    return rect;
+  }
+
+  addGridSquare(tileX, tileY, color) {
+    // remember, grid origins are in the center
+    // while tile origins are top left
+    const gridSquare = this.scene.add.grid(
+      tileX + this.tileWidth / 2,
+      tileY + this.tileHeight / 2,
+      this.tileWidth,
+      this.tileHeight,
+      this.tileWidth,
+      this.tileHeight,
+      color,
+      0.25
+    );
+
+    return gridSquare;
+  }
+
+  createMoveableGrid() {
+    this.tiles.forEach((tile) => {
+      if (tile.collides) return;
+      this.addGridSquare(tile.pixelX, tile.pixelY, "0x000000");
+    });
   }
 }

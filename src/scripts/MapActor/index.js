@@ -28,6 +28,10 @@ export default class MapActor {
     this.mapRenderer = mapRenderer;
   }
 
+  get currentTile() {
+    return this.mapRenderer.currentTile(this.sprite.x, this.sprite.y);
+  }
+
   spawn(x, y) {
     this.sprite = this.scene.add.sprite(
       x + this.spriteWidth / 2,
@@ -39,7 +43,7 @@ export default class MapActor {
 
   moveUp() {
     const moveY = this.sprite.y - this.mapRenderer.tileHeight;
-    const oldTile = this.currentTile();
+    const oldTile = this.currentTile;
     const newTile = this.mapRenderer.currentTile(this.sprite.x, moveY);
     if (newTile.collides) return;
     this.mapRenderer.handleMovementCollision(oldTile, newTile);
@@ -50,7 +54,7 @@ export default class MapActor {
     this.sprite.flipX = false;
 
     const moveX = this.sprite.x + this.mapRenderer.tileWidth;
-    const oldTile = this.currentTile();
+    const oldTile = this.currentTile;
     const newTile = this.mapRenderer.currentTile(moveX, this.sprite.y);
     if (newTile.collides) return;
 
@@ -60,7 +64,7 @@ export default class MapActor {
 
   moveDown() {
     const moveY = this.sprite.y + this.mapRenderer.tileHeight;
-    const oldTile = this.currentTile();
+    const oldTile = this.currentTile;
     const newTile = this.mapRenderer.currentTile(this.sprite.x, moveY);
     if (newTile.collides) return;
 
@@ -72,15 +76,11 @@ export default class MapActor {
     this.sprite.flipX = true;
 
     const moveX = this.sprite.x - this.mapRenderer.tileWidth;
-    const oldTile = this.currentTile();
+    const oldTile = this.currentTile;
     const newTile = this.mapRenderer.currentTile(moveX, this.sprite.y);
     if (newTile.collides) return;
 
     this.mapRenderer.handleMovementCollision(oldTile, newTile);
     this.sprite.x = moveX;
-  }
-
-  currentTile() {
-    return this.mapRenderer.currentTile(this.sprite.x, this.sprite.y);
   }
 }
