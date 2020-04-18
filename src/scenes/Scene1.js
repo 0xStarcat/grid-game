@@ -5,6 +5,7 @@ import characters from "Assets/knights.png";
 import MapRenderer from "Scripts/MapRenderer";
 import MapActor from "Scripts/MapActor";
 import TurnKeeper from "Scripts/TurnKeeper";
+import InputManager from "Scripts/InputManager";
 
 export default class Scene1 extends Phaser.Scene {
   constructor() {
@@ -25,6 +26,7 @@ export default class Scene1 extends Phaser.Scene {
     this.camera = this.cameras.main;
 
     this.mapRenderer = new MapRenderer(this, "nature-tiles", 32, 32);
+    this.InputManager = new InputManager(this);
 
     this.actor1 = new MapActor(
       this,
@@ -37,22 +39,6 @@ export default class Scene1 extends Phaser.Scene {
 
     this.spawnActor(this.actor1, this.mapRenderer);
 
-    this.input.keyboard.on("keydown_A", (event) => {
-      this.actor1.moveLeft();
-    });
-
-    this.input.keyboard.on("keydown_D", (event) => {
-      this.actor1.moveRight();
-    });
-
-    this.input.keyboard.on("keydown_W", (event) => {
-      this.actor1.moveUp();
-    });
-
-    this.input.keyboard.on("keydown_S", (event) => {
-      this.actor1.moveDown();
-    });
-
     this.actor2 = new MapActor(
       this,
       32,
@@ -64,23 +50,10 @@ export default class Scene1 extends Phaser.Scene {
 
     this.spawnActor(this.actor2, this.mapRenderer);
 
-    this.input.keyboard.on("keydown_LEFT", (event) => {
-      this.actor2.moveLeft();
-    });
-
-    this.input.keyboard.on("keydown_RIGHT", (event) => {
-      this.actor2.moveRight();
-    });
-
-    this.input.keyboard.on("keydown_UP", (event) => {
-      this.actor2.moveUp();
-    });
-
-    this.input.keyboard.on("keydown_DOWN", (event) => {
-      this.actor2.moveDown();
-    });
-
-    this.turnKeeper = new TurnKeeper(this, [this.actor1, this.actor2]);
+    this.turnKeeper = new TurnKeeper(this, this.InputManager, [
+      this.actor1,
+      this.actor2,
+    ]);
     this.turnKeeper.beginTrackingTurns();
 
     this.input.keyboard.on("keydown_SPACE", (event) => {

@@ -1,6 +1,7 @@
 export default class TurnKeeper {
-  constructor(scene, participants = []) {
+  constructor(scene, inputManager, participants = []) {
     this.scene = scene;
+    this.inputManager = inputManager;
     this.participants = participants;
     this.turnOwner = participants[0]; // who's turn it is
     this.turnCount = 1;
@@ -9,6 +10,7 @@ export default class TurnKeeper {
 
   beforeTurn() {
     console.log(`Beginning turn ${this.turnCount}`);
+    this.inputManager.enableActorMoveKeys(this.turnOwner);
   }
 
   beginTurn() {
@@ -19,6 +21,7 @@ export default class TurnKeeper {
 
   afterTurn() {
     this.turnOwner.turnIndicator.destroy();
+    this.inputManager.resetActorMoveKeys();
   }
 
   beginTrackingTurns() {
