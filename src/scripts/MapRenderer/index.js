@@ -14,10 +14,18 @@ export default class MapRenderer {
     this.layers = [this.createLayer(this.map, this.tileSet)];
     this.currentLayer = this.layers[0];
     this.tiles = this.getTiles();
-    this.cursor = new Cursor(this, this.tiles[0].pixelX, this.tiles[0].pixelY);
+    this.cursor = new Cursor(
+      this.scene,
+      this,
+      this.tiles[0].pixelX,
+      this.tiles[0].pixelY
+    );
 
+    this.borderTiles = [75, 76, 77, 95, 97, 115, 116, 117];
     // sets stone  borders as collidable
-    this.map.setCollision([75, 76, 77, 95, 97, 115, 116, 117], true);
+    this.map.setCollision(this.borderTiles, true);
+    this.setTileProperties();
+
     // show grid
     this.moveableGrid = this.createMoveableGrid();
   }
@@ -132,7 +140,7 @@ export default class MapRenderer {
     return this.currentLayer.getTileAtWorldXY(x, y);
   }
 
-  topTile(currentTile) {
+  upTile(currentTile) {
     return this.currentLayer.getTileAtWorldXY(
       currentTile.pixelX,
       currentTile.pixelY - this.tileHeight
@@ -146,7 +154,7 @@ export default class MapRenderer {
     );
   }
 
-  bottomTile(currentTile) {
+  downTile(currentTile) {
     return this.currentLayer.getTileAtWorldXY(
       currentTile.pixelX,
       currentTile.pixelY + this.tileHeight
@@ -177,6 +185,14 @@ export default class MapRenderer {
 
   getTiles() {
     return [].concat.apply([], this.currentLayer.layer.data);
+  }
+
+  setTileProperties() {
+    this.tiles.forEach((tile) => {
+      if (this.borderTiles.includes(tile.index)) {
+        tile.properties.borderTile = true;
+      }
+    });
   }
 
   addRectangleOutline(tileX, tileY, color) {

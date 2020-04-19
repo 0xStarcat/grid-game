@@ -40,51 +40,38 @@ export default class MapActor {
     );
   }
 
-  moveUp() {
-    const moveY = this.sprite.y - this.mapRenderer.tileHeight;
+  move(x, y) {
     const oldTile = this.currentTile;
-    const newTile = this.mapRenderer.currentTile(this.sprite.x, moveY);
+    const newTile = this.mapRenderer.currentTile(x, y);
     if (newTile.collides) return;
     this.mapRenderer.handleMovementCollision(oldTile, newTile);
-    this.sprite.y = moveY;
+    this.sprite.x = x;
+    this.sprite.y = y;
     this.updateTurnIndicator();
+  }
+
+  moveUp() {
+    const moveY = this.sprite.y - this.mapRenderer.tileHeight;
+    this.move(this.sprite.x, moveY);
   }
 
   moveRight() {
     this.sprite.flipX = false;
 
     const moveX = this.sprite.x + this.mapRenderer.tileWidth;
-    const oldTile = this.currentTile;
-    const newTile = this.mapRenderer.currentTile(moveX, this.sprite.y);
-    if (newTile.collides) return;
-
-    this.mapRenderer.handleMovementCollision(oldTile, newTile);
-    this.sprite.x = moveX;
-    this.updateTurnIndicator();
+    this.move(moveX, this.sprite.y);
   }
 
   moveDown() {
     const moveY = this.sprite.y + this.mapRenderer.tileHeight;
-    const oldTile = this.currentTile;
-    const newTile = this.mapRenderer.currentTile(this.sprite.x, moveY);
-    if (newTile.collides) return;
-
-    this.mapRenderer.handleMovementCollision(oldTile, newTile);
-    this.sprite.y = moveY;
-    this.updateTurnIndicator();
+    this.move(this.sprite.x, moveY);
   }
 
   moveLeft() {
     this.sprite.flipX = true;
 
     const moveX = this.sprite.x - this.mapRenderer.tileWidth;
-    const oldTile = this.currentTile;
-    const newTile = this.mapRenderer.currentTile(moveX, this.sprite.y);
-    if (newTile.collides) return;
-
-    this.mapRenderer.handleMovementCollision(oldTile, newTile);
-    this.sprite.x = moveX;
-    this.updateTurnIndicator();
+    this.move(moveX, this.sprite.y);
   }
 
   addTurnIndicator() {

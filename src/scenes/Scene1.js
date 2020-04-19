@@ -57,10 +57,12 @@ export default class Scene1 extends Phaser.Scene {
 
     this.spawnActor(this.actor2, this.mapRenderer);
 
-    this.turnKeeper = new TurnKeeper(this, this.inputManager, [
-      this.actor1,
-      this.actor2,
-    ]);
+    this.turnKeeper = new TurnKeeper(
+      this,
+      this.mapRenderer,
+      this.inputManager,
+      [this.actor1, this.actor2]
+    );
     this.turnKeeper.beginTrackingTurns();
 
     this.input.keyboard.on("keydown_ENTER", (event) => {
