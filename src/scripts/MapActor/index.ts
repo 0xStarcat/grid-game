@@ -1,3 +1,5 @@
+import MapRenderer from "scripts/MapRenderer";
+
 /*
  * @classdesc
  * The base class for characters rendered on a tilemap
@@ -10,28 +12,37 @@
  * @param {MapRenderer} mapRenderer
  */
 export default class MapActor {
+  scene: Phaser.Scene;
+  mapRenderer: MapRenderer;
+  spriteWidth: number;
+  spriteHeight: number;
+  spritesheetName: string;
+  spritesheetIndex: number;
+  turnIndicator: Phaser.GameObjects.Rectangle;
+  sprite: Phaser.GameObjects.Sprite;
+
   constructor(
-    scene,
-    spriteWidth,
-    spriteHeight,
-    spritesheetName,
-    spritesheetIndex,
-    mapRenderer
+    scene: Phaser.Scene,
+    mapRenderer: MapRenderer,
+    spriteWidth: number,
+    spriteHeight: number,
+    spritesheetName: string,
+    spritesheetIndex: number
   ) {
     this.scene = scene;
+    this.mapRenderer = mapRenderer;
     this.spriteWidth = spriteWidth;
     this.spriteHeight = spriteHeight;
     this.spritesheetName = spritesheetName;
     this.spritesheetIndex = spritesheetIndex;
-    this.mapRenderer = mapRenderer;
     this.turnIndicator; // UI indicator for indicating it's this actor's turn
   }
 
-  get currentTile() {
+  get currentTile(): Phaser.Tilemaps.Tile {
     return this.mapRenderer.currentTile(this.sprite.x, this.sprite.y);
   }
 
-  spawn(x, y) {
+  spawn(x: number, y: number): void {
     this.sprite = this.scene.add.sprite(
       x + this.spriteWidth / 2,
       y + this.spriteHeight / 2,
@@ -40,7 +51,7 @@ export default class MapActor {
     );
   }
 
-  move(x, y) {
+  move(x: number, y: number): void {
     const oldTile = this.currentTile;
     const newTile = this.mapRenderer.currentTile(x, y);
     if (newTile.collides) return;
@@ -50,36 +61,36 @@ export default class MapActor {
     this.updateTurnIndicator();
   }
 
-  moveUp() {
+  moveUp(): void {
     const moveY = this.sprite.y - this.mapRenderer.tileHeight;
     this.move(this.sprite.x, moveY);
   }
 
-  moveRight() {
+  moveRight(): void {
     this.sprite.flipX = false;
 
     const moveX = this.sprite.x + this.mapRenderer.tileWidth;
     this.move(moveX, this.sprite.y);
   }
 
-  moveDown() {
+  moveDown(): void {
     const moveY = this.sprite.y + this.mapRenderer.tileHeight;
     this.move(this.sprite.x, moveY);
   }
 
-  moveLeft() {
+  moveLeft(): void {
     this.sprite.flipX = true;
 
     const moveX = this.sprite.x - this.mapRenderer.tileWidth;
     this.move(moveX, this.sprite.y);
   }
 
-  addTurnIndicator() {
+  addTurnIndicator(): void {
     // Class CurrentActorIndicator
-    const rect = this.scene.mapRenderer.addRectangleOutline(
+    const rect = this.mapRenderer.addRectangleOutline(
       this.currentTile.pixelX,
       this.currentTile.pixelY,
-      "0xefc53f"
+      Phaser.Display.Color.ValueToColor("0xefc53f").color
     );
 
     this.scene.tweens.add({
@@ -95,7 +106,7 @@ export default class MapActor {
     this.turnIndicator = rect;
   }
 
-  updateTurnIndicator() {
+  updateTurnIndicator(): void {
     if (!this.turnIndicator) return;
     this.turnIndicator.destroy();
     this.addTurnIndicator();

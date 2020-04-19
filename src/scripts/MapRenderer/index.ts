@@ -2,7 +2,25 @@ import * as u from "./utilities/mapRendererUtils";
 import Cursor from "@scripts/Cursor/index";
 
 export default class MapRenderer {
-  constructor(scene, tileImageName, tileWidth, tileHeight) {
+  scene: Phaser.Scene;
+  tileImageName: string;
+  tileWidth: number;
+  tileHeight: number;
+  map: Phaser.Tilemaps.Tilemap;
+  level: number[][];
+  tileSet: Phaser.Tilemaps.Tileset;
+  layers: Phaser.Tilemaps.StaticTilemapLayer[];
+  currentLayer: Phaser.Tilemaps.StaticTilemapLayer;
+  tiles: Phaser.Tilemaps.Tile[];
+  borderTiles: number[];
+  cursor: Cursor;
+
+  constructor(
+    scene: Phaser.Scene,
+    tileImageName: string,
+    tileWidth: number,
+    tileHeight: number
+  ) {
     this.scene = scene;
     this.tileImageName = tileImageName;
     this.tileWidth = tileWidth;
@@ -27,7 +45,7 @@ export default class MapRenderer {
     this.setTileProperties();
 
     // show grid
-    this.moveableGrid = this.createMoveableGrid();
+    this.createMoveableGrid();
   }
 
   createMap() {
@@ -108,19 +126,20 @@ export default class MapRenderer {
     return level;
   }
 
-  createTileset(map, tileImageName) {
+  createTileset(map: Phaser.Tilemaps.Tilemap, tileImageName: string) {
     const tileset = map.addTilesetImage(tileImageName);
+    console.log(tileset);
 
     return tileset;
   }
 
-  createLayer(map, tileset) {
+  createLayer(map: Phaser.Tilemaps.Tilemap, tileset: Phaser.Tilemaps.Tileset) {
     const layer = map.createStaticLayer(0, tileset, 0, 0);
 
     return layer;
   }
 
-  randomTile(checkCollision = true) {
+  randomTile(checkCollision: boolean = true) {
     const layer = this.map.layers[0];
 
     let randomRow = Phaser.Utils.Array.GetRandom(layer.data);
@@ -136,58 +155,61 @@ export default class MapRenderer {
     return randomTile;
   }
 
-  currentTile(x, y) {
+  currentTile(x: number, y: number) {
     return this.currentLayer.getTileAtWorldXY(x, y);
   }
 
-  upTile(currentTile) {
+  upTile(currentTile: Phaser.Tilemaps.Tile) {
     return this.currentLayer.getTileAtWorldXY(
       currentTile.pixelX,
       currentTile.pixelY - this.tileHeight
     );
   }
 
-  rightTile(currentTile) {
+  rightTile(currentTile: Phaser.Tilemaps.Tile) {
     return this.currentLayer.getTileAtWorldXY(
       currentTile.pixelX + this.tileWidth,
       currentTile.pixelY
     );
   }
 
-  downTile(currentTile) {
+  downTile(currentTile: Phaser.Tilemaps.Tile) {
     return this.currentLayer.getTileAtWorldXY(
       currentTile.pixelX,
       currentTile.pixelY + this.tileHeight
     );
   }
 
-  leftTile(currentTile) {
+  leftTile(currentTile: Phaser.Tilemaps.Tile) {
     return this.currentLayer.getTileAtWorldXY(
       currentTile.pixelX - this.tileWidth,
       currentTile.pixelY
     );
   }
 
-  setCollisionTile(tile) {
+  setCollisionTile(tile: Phaser.Tilemaps.Tile) {
     tile.properties.collides = true;
     this.map.setCollisionByProperty({ collides: true }, true);
   }
 
-  unsetCollisionTile(tile) {
+  unsetCollisionTile(tile: Phaser.Tilemaps.Tile) {
     tile.properties.collides = false;
     this.map.setCollisionByProperty({ collides: false }, false);
   }
 
-  handleMovementCollision(oldTile, newTile) {
+  handleMovementCollision(
+    oldTile: Phaser.Tilemaps.Tile,
+    newTile: Phaser.Tilemaps.Tile
+  ) {
     this.unsetCollisionTile(oldTile);
     this.setCollisionTile(newTile);
   }
 
-  getTiles() {
+  getTiles(): Phaser.Tilemaps.Tile[] {
     return [].concat.apply([], this.currentLayer.layer.data);
   }
 
-  setTileProperties() {
+  setTileProperties(): void {
     this.tiles.forEach((tile) => {
       if (this.borderTiles.includes(tile.index)) {
         tile.properties.borderTile = true;
@@ -195,20 +217,20 @@ export default class MapRenderer {
     });
   }
 
-  addRectangleOutline(tileX, tileY, color) {
+  addRectangleOutline(tileX: number, tileY: number, color: number) {
     const rect = this.scene.add.rectangle(
       tileX + this.tileWidth / 2,
       tileY + this.tileHeight / 2,
       this.tileWidth,
       this.tileHeight,
-      "0x000000",
+      Phaser.Display.Color.ValueToColor("0x000000").color,
       0
     );
     rect.setStrokeStyle(1, color);
     return rect;
   }
 
-  addGridSquare(tileX, tileY, color) {
+  addGridSquare(tileX: number, tileY: number, color: number) {
     // remember, grid origins are in the center
     // while tile origins are top left
     const gridSquare = this.scene.add.grid(
@@ -228,7 +250,11 @@ export default class MapRenderer {
   createMoveableGrid() {
     this.tiles.forEach((tile) => {
       if (tile.collides) return;
-      this.addGridSquare(tile.pixelX, tile.pixelY, "0x000000");
+      this.addGridSquare(
+        tile.pixelX,
+        tile.pixelY,
+        Phaser.Display.Color.ValueToColor("0x000000").color
+      );
     });
   }
 }

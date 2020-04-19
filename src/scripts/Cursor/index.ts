@@ -1,16 +1,30 @@
-import Phaser from "phaser";
+import "phaser";
+import MapRenderer from "@scripts/MapRenderer";
 
 export default class Cursor extends Phaser.GameObjects.GameObject {
-  constructor(scene, mapRenderer, x, y) {
+  scene: Phaser.Scene;
+  mapRenderer: MapRenderer;
+  x: number;
+  y: number;
+  currentTile: Phaser.Tilemaps.Tile;
+  color: number;
+  rect: Phaser.GameObjects.Rectangle;
+
+  constructor(
+    scene: Phaser.Scene,
+    mapRenderer: MapRenderer,
+    x: number,
+    y: number
+  ) {
     super(scene, "cursor");
     this.mapRenderer = mapRenderer;
     this.x = x;
     this.y = y;
     this.currentTile = mapRenderer.currentTile(x, y);
-    this.color = "0xffffff";
+    this.color = Phaser.Display.Color.ValueToColor("0xffffff").color;
   }
 
-  render(tile) {
+  render(tile: Phaser.Tilemaps.Tile) {
     if (this.rect) {
       this.rect.destroy();
     }
@@ -29,7 +43,7 @@ export default class Cursor extends Phaser.GameObjects.GameObject {
     this.rect.destroy();
   }
 
-  move(tile) {
+  move(tile: Phaser.Tilemaps.Tile) {
     if (tile.properties.borderTile) return;
     this.render(tile);
   }
