@@ -1,5 +1,3 @@
-import Phaser from "phaser";
-
 /*
  * @classdesc
  * The base class for characters rendered on a tilemap

@@ -1,15 +1,22 @@
 import Phaser from "phaser";
-import logoImg from "Assets/logo.png";
-import natureTiles from "Assets/nature-tileset.png";
-import characters from "Assets/knights.png";
-import MapRenderer from "Scripts/MapRenderer";
-import MapActor from "Scripts/MapActor";
-import TurnKeeper from "Scripts/TurnKeeper";
-import InputManager from "Scripts/InputManager";
+import logoImg from "@assets/logo.png";
+import natureTiles from "@assets/nature-tileset.png";
+import characters from "@assets/knights.png";
+import MapRenderer from "@scripts/MapRenderer";
+import MapActor from "@scripts/MapActor";
+import TurnKeeper from "@scripts/TurnKeeper";
+import InputManager from "@scripts/InputManager";
 
 export default class Scene1 extends Phaser.Scene {
   constructor() {
     super("gameMenu");
+
+    this.graphics;
+    this.camera;
+    this.mapRenderer;
+    this.inputManager;
+    this.actor1;
+    this.actor2;
   }
 
   preload() {
@@ -26,7 +33,7 @@ export default class Scene1 extends Phaser.Scene {
     this.camera = this.cameras.main;
 
     this.mapRenderer = new MapRenderer(this, "nature-tiles", 32, 32);
-    this.InputManager = new InputManager(this);
+    this.inputManager = new InputManager(this);
 
     this.actor1 = new MapActor(
       this,
@@ -50,13 +57,13 @@ export default class Scene1 extends Phaser.Scene {
 
     this.spawnActor(this.actor2, this.mapRenderer);
 
-    this.turnKeeper = new TurnKeeper(this, this.InputManager, [
+    this.turnKeeper = new TurnKeeper(this, this.inputManager, [
       this.actor1,
       this.actor2,
     ]);
     this.turnKeeper.beginTrackingTurns();
 
-    this.input.keyboard.on("keydown_SPACE", (event) => {
+    this.input.keyboard.on("keydown_ENTER", (event) => {
       this.turnKeeper.nextTurn();
     });
   }

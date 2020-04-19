@@ -1,4 +1,5 @@
 import * as u from "./utilities/mapRendererUtils";
+import Cursor from "@scripts/Cursor/index";
 
 export default class MapRenderer {
   constructor(scene, tileImageName, tileWidth, tileHeight) {
@@ -13,6 +14,7 @@ export default class MapRenderer {
     this.layers = [this.createLayer(this.map, this.tileSet)];
     this.currentLayer = this.layers[0];
     this.tiles = this.getTiles();
+    this.cursor = new Cursor(this, this.tiles[0].pixelX, this.tiles[0].pixelY);
 
     // sets stone  borders as collidable
     this.map.setCollision([75, 76, 77, 95, 97, 115, 116, 117], true);

@@ -8,10 +8,10 @@ module.exports = {
   devtool: "eval-source-map",
   resolve: {
     alias: {
-      Assets: path.resolve(__dirname, "../src/assets/"),
-      Scenes: path.resolve(__dirname, "../src/scenes/"),
-      Scripts: path.resolve(__dirname, "../src/scripts/"),
-      Utilities: path.resolve(__dirname, "../src/utilities/"),
+      "@assets": path.resolve(__dirname, "../src/assets/"),
+      "@scenes": path.resolve(__dirname, "../src/scenes/"),
+      "@scripts": path.resolve(__dirname, "../src/scripts/"),
+      "@utilities": path.resolve(__dirname, "../src/utilities/"),
     },
   },
   module: {
