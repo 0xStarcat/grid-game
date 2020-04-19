@@ -55,33 +55,33 @@ export default class MapActor {
     const oldTile = this.currentTile;
     const newTile = this.mapRenderer.currentTile(x, y);
     if (newTile.collides) return;
-    this.mapRenderer.handleMovementCollision(oldTile, newTile);
+    this.mapRenderer.mapTileset.handleMovementCollision(oldTile, newTile);
     this.sprite.x = x;
     this.sprite.y = y;
     this.updateTurnIndicator();
   }
 
   moveUp(): void {
-    const moveY = this.sprite.y - this.mapRenderer.tileHeight;
+    const moveY = this.sprite.y - this.mapRenderer.mapTileset.tileHeight;
     this.move(this.sprite.x, moveY);
   }
 
   moveRight(): void {
     this.sprite.flipX = false;
 
-    const moveX = this.sprite.x + this.mapRenderer.tileWidth;
+    const moveX = this.sprite.x + this.mapRenderer.mapTileset.tileWidth;
     this.move(moveX, this.sprite.y);
   }
 
   moveDown(): void {
-    const moveY = this.sprite.y + this.mapRenderer.tileHeight;
+    const moveY = this.sprite.y + this.mapRenderer.mapTileset.tileHeight;
     this.move(this.sprite.x, moveY);
   }
 
   moveLeft(): void {
     this.sprite.flipX = true;
 
-    const moveX = this.sprite.x - this.mapRenderer.tileWidth;
+    const moveX = this.sprite.x - this.mapRenderer.mapTileset.tileWidth;
     this.move(moveX, this.sprite.y);
   }
 

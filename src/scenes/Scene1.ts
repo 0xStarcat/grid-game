@@ -5,11 +5,13 @@ import MapRenderer from "@scripts/MapRenderer";
 import MapActor from "@scripts/MapActor";
 import TurnKeeper from "@scripts/TurnKeeper";
 import InputManager from "@scripts/InputManager";
+import MapTileset from "@scripts/MapTileset";
 
 export default class Scene1 extends Phaser.Scene {
   graphics: Phaser.GameObjects.Graphics;
   camera: Phaser.Cameras.Scene2D.Camera;
   mapRenderer: MapRenderer;
+  mapTileset: MapTileset;
   inputManager: InputManager;
   turnKeeper: TurnKeeper;
   actor1: MapActor;
@@ -17,13 +19,6 @@ export default class Scene1 extends Phaser.Scene {
 
   constructor() {
     super("gameMenu");
-
-    this.graphics;
-    this.camera;
-    this.mapRenderer;
-    this.inputManager;
-    this.actor1;
-    this.actor2;
   }
 
   preload() {
@@ -36,10 +31,10 @@ export default class Scene1 extends Phaser.Scene {
 
   create() {
     this.graphics = this.add.graphics();
-
     this.camera = this.cameras.main;
 
-    this.mapRenderer = new MapRenderer(this, "nature-tiles", 32, 32);
+    this.mapTileset = new MapTileset(this, "nature-tiles", 32, 32);
+    this.mapRenderer = new MapRenderer(this, this.mapTileset);
     this.inputManager = new InputManager(this);
 
     this.actor1 = new MapActor(
@@ -83,7 +78,7 @@ export default class Scene1 extends Phaser.Scene {
   spawnActor(actor: MapActor, mapRenderer: MapRenderer): void {
     // randomly places actor on a tile
     const randomTile = mapRenderer.randomTile(true);
-    this.mapRenderer.setCollisionTile(randomTile);
+    this.mapTileset.setCollisionTile(randomTile);
     return actor.spawn(randomTile.pixelX, randomTile.pixelY);
   }
 }
