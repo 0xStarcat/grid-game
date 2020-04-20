@@ -2,6 +2,7 @@ import GameScene from "@scripts/GameScene";
 import PathMaker from "@scripts/PathMaker";
 import GridMoveAnimation from "@scripts/GridMoveAnimation";
 import ActionManager from "@scripts/ActionManager";
+import Cursor from "@scripts/Cursor";
 /*
  * @classdesc
  * The base class for characters rendered on a tilemap
@@ -21,9 +22,10 @@ export default class MapActor {
   spritesheetName: string;
   spritesheetIndex: number;
   actionManager: ActionManager;
-  turnIndicator: Phaser.GameObjects.Rectangle;
   sprite: Phaser.GameObjects.Sprite;
   moveAnimation: GridMoveAnimation;
+  _turnIndicator: Phaser.GameObjects.Rectangle;
+  _cursor: Cursor;
 
   constructor(
     scene: GameScene,
@@ -39,12 +41,36 @@ export default class MapActor {
     this.spriteHeight = spriteHeight;
     this.spritesheetName = spritesheetName;
     this.spritesheetIndex = spritesheetIndex;
-    this.turnIndicator; // UI indicator for indicating it's this actor's turn
+    this._turnIndicator; // UI indicator for indicating it's this actor's turn
     this.moveAnimation;
   }
 
   get currentTile(): Phaser.Tilemaps.Tile {
     return this.scene.mapRenderer.tileAt(this.sprite.x, this.sprite.y);
+  }
+
+  get cursor() {
+    return this._cursor;
+  }
+
+  set cursor(cursor: Cursor) {
+    if (this._cursor) {
+      this._cursor.destroy();
+    }
+
+    this._cursor = cursor;
+  }
+
+  get turnIndicator() {
+    return this._turnIndicator;
+  }
+
+  set turnIndicator(rect: Phaser.GameObjects.Rectangle) {
+    if (this._turnIndicator) {
+      this._turnIndicator.destroy();
+    }
+
+    this._turnIndicator = rect;
   }
 
   update() {}
@@ -62,23 +88,45 @@ export default class MapActor {
     this.move(centerX, centerY);
   }
 
+  select(): void {
+    this.cursor = new Cursor(
+      this.scene,
+      this.scene.mapRenderer,
+      this,
+      this.currentTile
+    );
+
+    this.scene.inputManager.enableCursorMoveKeys(this);
+    this.scene.inputManager.enableActorMoveKeys(this);
+
+    this.addTurnIndicator(this.currentTile.pixelX, this.currentTile.pixelY);
+  }
+
+  deselect(): void {
+    this.cursor = null;
+
+    this.scene.inputManager.resetCursorMoveKeys();
+    this.scene.inputManager.resetActorMoveKeys();
+
+    this.turnIndicator = null;
+  }
+
   move(x: number, y: number): void {
     const oldTile = this.currentTile;
     const newTile = this.scene.mapRenderer.tileAt(x, y);
     if (newTile.collides) return;
-    this.updateTurnIndicator(newTile.pixelX, newTile.pixelY);
+    this.addTurnIndicator(newTile.pixelX, newTile.pixelY);
     this.scene.mapRenderer.mapTileset.handleMovementCollision(oldTile, newTile);
 
     this.sprite.x = x;
     this.sprite.y = y;
-    this.pathMaker.resetPath();
   }
 
   animatedMove(x: number, y: number, callBack: Function = () => {}): void {
     const oldTile = this.currentTile;
     const newTile = this.scene.mapRenderer.tileAt(x, y);
     if (newTile.collides) return;
-    this.updateTurnIndicator(newTile.pixelX, newTile.pixelY);
+    this.addTurnIndicator(newTile.pixelX, newTile.pixelY);
 
     this.scene.inputManager.resetActorMoveKeys();
     this.moveAnimation = new GridMoveAnimation(
@@ -173,11 +221,5 @@ export default class MapActor {
     );
 
     this.turnIndicator = rect;
-  }
-
-  updateTurnIndicator(x: number, y: number): void {
-    if (!this.turnIndicator) return;
-    this.turnIndicator.destroy();
-    this.addTurnIndicator(x, y);
   }
 }

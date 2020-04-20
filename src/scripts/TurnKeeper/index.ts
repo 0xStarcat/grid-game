@@ -26,15 +26,7 @@ export default class TurnKeeper {
   }
 
   beforeTurn(): void {
-    this.inputManager.enableCursorMoveKeys(this.mapRenderer.cursor);
-    this.inputManager.enableActorMoveKeys(this.turnOwner);
-    this.turnOwner.pathMaker.resetPath();
-    this.mapRenderer.cursor.cursorOwner = this.turnOwner;
-    this.mapRenderer.cursor.render(this.turnOwner.currentTile);
-    this.turnOwner.addTurnIndicator(
-      this.turnOwner.currentTile.pixelX,
-      this.turnOwner.currentTile.pixelY
-    );
+    this.turnOwner.select();
   }
 
   beginTurn(): void {}
@@ -42,10 +34,7 @@ export default class TurnKeeper {
   endTurn(): void {}
 
   afterTurn(): void {
-    this.turnOwner.turnIndicator.destroy();
-    this.inputManager.resetActorMoveKeys();
-    this.inputManager.resetCursorMoveKeys();
-    this.turnOwner.pathMaker.clearPath();
+    this.turnOwner.deselect();
   }
 
   beginTrackingTurns(): void {

@@ -14,21 +14,7 @@ export default class InputManager {
   }
 
   enableActorMoveKeys(mapActor: MapActor) {
-    // this.scene.input.keyboard.on("keydown_W", (event: KeyboardEvent) => {
-    //   mapActor.moveUp();
-    // });
-
-    // this.scene.input.keyboard.on("keydown_D", (event: KeyboardEvent) => {
-    //   mapActor.moveRight();
-    // });
-
-    // this.scene.input.keyboard.on("keydown_S", (event: KeyboardEvent) => {
-    //   mapActor.moveDown();
-    // });
-
-    // this.scene.input.keyboard.on("keydown_A", (event: KeyboardEvent) => {
-    //   mapActor.moveLeft();
-    // });
+    this.resetActorMoveKeys(); // ensure 1 set of listeners
 
     this.scene.input.keyboard.on("keydown_UP", (event: KeyboardEvent) => {
       mapActor.animatedMoveUp(this.moveEndCallback.bind(this));
@@ -48,53 +34,36 @@ export default class InputManager {
   }
 
   resetActorMoveKeys() {
-    this.scene.input.keyboard.off("keydown_W");
-    this.scene.input.keyboard.off("keydown_D");
-    this.scene.input.keyboard.off("keydown_S");
-    this.scene.input.keyboard.off("keydown_A");
     this.scene.input.keyboard.off("keydown_UP");
     this.scene.input.keyboard.off("keydown_RIGHT");
     this.scene.input.keyboard.off("keydown_DOWN");
     this.scene.input.keyboard.off("keydown_LEFT");
   }
 
-  enableCursorMoveKeys(cursor: Cursor) {
+  enableCursorMoveKeys(mapActor: MapActor) {
+    this.resetCursorMoveKeys(); // ensure 1 set of listeners
+
     this.scene.input.keyboard.on("keydown_W", (event: KeyboardEvent) => {
-      cursor.moveUp();
+      mapActor.cursor.moveUp();
     });
 
     this.scene.input.keyboard.on("keydown_D", (event: KeyboardEvent) => {
-      cursor.moveRight();
+      mapActor.cursor.moveRight();
     });
 
     this.scene.input.keyboard.on("keydown_S", (event: KeyboardEvent) => {
-      cursor.moveDown();
+      mapActor.cursor.moveDown();
     });
 
     this.scene.input.keyboard.on("keydown_A", (event: KeyboardEvent) => {
-      cursor.moveLeft();
+      mapActor.cursor.moveLeft();
     });
 
-    // this.scene.input.keyboard.on("keydown_UP", (event: KeyboardEvent) => {
-    //   cursor.moveUp();
-    // });
-
-    // this.scene.input.keyboard.on("keydown_RIGHT", (event: KeyboardEvent) => {
-    //   cursor.moveRight();
-    // });
-
-    // this.scene.input.keyboard.on("keydown_DOWN", (event: KeyboardEvent) => {
-    //   cursor.moveDown();
-    // });
-
-    // this.scene.input.keyboard.on("keydown_LEFT", (event: KeyboardEvent) => {
-    //   cursor.moveLeft();
-    // });
-
     this.scene.input.keyboard.on("keydown_SPACE", (event: KeyboardEvent) => {
-      // cursor.cursorOwner.moveToTile(cursor.currentTile);
-      cursor.cursorOwner.actionManager.pathMove(
-        cursor.cursorOwner.pathMaker.path,
+      if (!mapActor.pathMaker.path.length) return;
+      this.resetCursorMoveKeys();
+      mapActor.actionManager.pathMove(
+        mapActor.pathMaker.path,
         this.scene.turnKeeper.nextTurn.bind(this.scene.turnKeeper)
       );
     });
@@ -105,10 +74,6 @@ export default class InputManager {
     this.scene.input.keyboard.off("keydown_D");
     this.scene.input.keyboard.off("keydown_S");
     this.scene.input.keyboard.off("keydown_A");
-    this.scene.input.keyboard.off("keydown_UP");
-    this.scene.input.keyboard.off("keydown_RIGHT");
-    this.scene.input.keyboard.off("keydown_DOWN");
-    this.scene.input.keyboard.off("keydown_LEFT");
     this.scene.input.keyboard.off("keydown_SPACE");
   }
 }

@@ -8,32 +8,37 @@ export default class Cursor extends Phaser.GameObjects.GameObject {
   mapRenderer: MapRenderer;
   cursorOwner: MapActor;
   currentTile: Phaser.Tilemaps.Tile;
-  x: number;
-  y: number;
   color: number;
-  rect: Phaser.GameObjects.Rectangle;
+  _rect: Phaser.GameObjects.Rectangle;
 
   constructor(
     scene: GameScene,
     mapRenderer: MapRenderer,
     cursorOwner: MapActor,
-    x: number,
-    y: number
+    currentTile: Phaser.Tilemaps.Tile
   ) {
     super(scene, "cursor");
     this.mapRenderer = mapRenderer;
     this.cursorOwner = cursorOwner;
-    this.x = x;
-    this.y = y;
-    this.currentTile = this.mapRenderer.tileAt(this.x, this.y);
+    this.currentTile = currentTile;
     this.color = Phaser.Display.Color.ValueToColor("0xffffff").color;
+
+    this.renderAt(this.currentTile);
   }
 
-  render(tile: Phaser.Tilemaps.Tile) {
-    if (this.rect) {
-      this.rect.destroy();
+  get rect() {
+    return this._rect;
+  }
+
+  set rect(rect: Phaser.GameObjects.Rectangle) {
+    if (this._rect) {
+      this._rect.destroy();
     }
 
+    this._rect = rect;
+  }
+
+  renderAt(tile: Phaser.Tilemaps.Tile) {
     this.currentTile = tile;
     this.rect = this.mapRenderer.addRectangleOutline(
       tile.pixelX,
@@ -51,9 +56,6 @@ export default class Cursor extends Phaser.GameObjects.GameObject {
       repeatDelay: 100,
     });
 
-    this.x = tile.pixelX;
-    this.y = tile.pixelY;
-
     return this.rect;
   }
 
@@ -63,7 +65,7 @@ export default class Cursor extends Phaser.GameObjects.GameObject {
 
   move(tile: Phaser.Tilemaps.Tile) {
     if (tile.collides) return;
-    this.render(tile);
+    this.renderAt(tile);
   }
 
   moveUp() {
