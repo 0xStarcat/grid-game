@@ -1,4 +1,5 @@
 import MapRenderer from "scripts/MapRenderer";
+import PathMaker from "@scripts/PathMaker";
 
 /*
  * @classdesc
@@ -14,6 +15,7 @@ import MapRenderer from "scripts/MapRenderer";
 export default class MapActor {
   scene: Phaser.Scene;
   mapRenderer: MapRenderer;
+  pathMaker: PathMaker;
   spriteWidth: number;
   spriteHeight: number;
   spritesheetName: string;
@@ -31,6 +33,8 @@ export default class MapActor {
   ) {
     this.scene = scene;
     this.mapRenderer = mapRenderer;
+    this.pathMaker = new PathMaker(this.scene, this, this.mapRenderer);
+
     this.spriteWidth = spriteWidth;
     this.spriteHeight = spriteHeight;
     this.spritesheetName = spritesheetName;
@@ -39,25 +43,30 @@ export default class MapActor {
   }
 
   get currentTile(): Phaser.Tilemaps.Tile {
-    return this.mapRenderer.currentTile(this.sprite.x, this.sprite.y);
+    return this.mapRenderer.tileAt(this.sprite.x, this.sprite.y);
   }
 
   spawn(x: number, y: number): void {
+    const centerX = x + this.spriteWidth / 2;
+    const centerY = y + this.spriteHeight / 2;
     this.sprite = this.scene.add.sprite(
-      x + this.spriteWidth / 2,
-      y + this.spriteHeight / 2,
+      centerX,
+      centerY,
       this.spritesheetName,
       this.spritesheetIndex
     );
+
+    this.move(centerX, centerY);
   }
 
   move(x: number, y: number): void {
     const oldTile = this.currentTile;
-    const newTile = this.mapRenderer.currentTile(x, y);
+    const newTile = this.mapRenderer.tileAt(x, y);
     if (newTile.collides) return;
     this.mapRenderer.mapTileset.handleMovementCollision(oldTile, newTile);
     this.sprite.x = x;
     this.sprite.y = y;
+    this.pathMaker.resetPath();
     this.updateTurnIndicator();
   }
 
@@ -83,6 +92,13 @@ export default class MapActor {
 
     const moveX = this.sprite.x - this.mapRenderer.mapTileset.tileWidth;
     this.move(moveX, this.sprite.y);
+  }
+
+  moveToTile(tile: Phaser.Tilemaps.Tile) {
+    this.move(
+      tile.pixelX + this.spriteWidth / 2,
+      tile.pixelY + this.spriteHeight / 2
+    );
   }
 
   addTurnIndicator(): void {

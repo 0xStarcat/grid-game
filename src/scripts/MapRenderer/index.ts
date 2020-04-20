@@ -7,33 +7,20 @@ export default class MapRenderer {
 
   currentLayer: Phaser.Tilemaps.StaticTilemapLayer;
   cursor: Cursor;
+  pathCircles: Phaser.GameObjects.Arc[];
 
-  constructor(scene: Phaser.Scene, arenaTilset: MapTileset) {
+  constructor(scene: Phaser.Scene, mapTileset: MapTileset) {
     this.scene = scene;
-    this.mapTileset = arenaTilset;
-
+    this.mapTileset = mapTileset;
     this.currentLayer = this.mapTileset.layers[0];
-    this.cursor = new Cursor(this.scene, this, 0, 0);
+    this.cursor = new Cursor(this.scene, this, null, 0, 0);
+    this.pathCircles = [];
 
     // show grid
     this.createMoveableGrid();
   }
 
-  randomTile(checkCollision: boolean = true) {
-    let randomRow = Phaser.Utils.Array.GetRandom(this.currentLayer.layer.data);
-    let randomTile = Phaser.Utils.Array.GetRandom(randomRow);
-
-    if (checkCollision) {
-      while (randomTile.collides) {
-        randomRow = Phaser.Utils.Array.GetRandom(this.currentLayer.layer.data);
-        randomTile = Phaser.Utils.Array.GetRandom(randomRow);
-      }
-    }
-
-    return randomTile;
-  }
-
-  currentTile(x: number, y: number) {
+  tileAt(x: number, y: number) {
     return this.currentLayer.getTileAtWorldXY(x, y);
   }
 
@@ -63,6 +50,74 @@ export default class MapRenderer {
       currentTile.pixelX - this.mapTileset.tileWidth,
       currentTile.pixelY
     );
+  }
+
+  addPathCircles(
+    path: Phaser.Tilemaps.Tile[],
+    tile: Phaser.Tilemaps.Tile
+  ): void {
+    const tileIndex = path.indexOf(tile);
+    const prevTile = path[tileIndex - 1];
+
+    // adds path circle to prev / current tile connecting face
+    if (prevTile === this.upTile(tile)) {
+      this.addPathCircle(tile, "up");
+    } else if (prevTile === this.rightTile(tile)) {
+      this.addPathCircle(tile, "right");
+    } else if (prevTile === this.downTile(tile)) {
+      this.addPathCircle(tile, "down");
+    } else if (prevTile === this.leftTile(tile)) {
+      this.addPathCircle(tile, "left");
+    }
+
+    this.addPathCircle(tile, "center");
+  }
+
+  addPathCircle(
+    tile: Phaser.Tilemaps.Tile,
+    face: "up" | "right" | "down" | "left" | "center"
+  ) {
+    const centerX = this.mapTileset.tileWidth / 2;
+    const centerY = this.mapTileset.tileHeight / 2;
+
+    let circleX;
+    let circleY;
+
+    if (face === "up") {
+      circleX = tile.pixelX + centerX;
+      circleY = tile.pixelY;
+    } else if (face === "right") {
+      circleX = tile.pixelX + this.mapTileset.tileWidth;
+      circleY = tile.pixelY + centerY;
+    } else if (face === "down") {
+      circleX = tile.pixelX + centerX;
+      circleY = tile.pixelY + this.mapTileset.tileHeight;
+    } else if (face === "left") {
+      circleX = tile.pixelX;
+      circleY = tile.pixelY + centerY;
+    } else {
+      // center
+      circleX = tile.pixelX + centerX;
+      circleY = tile.pixelY + centerY;
+    }
+
+    const circle1 = this.scene.add.circle(
+      circleX,
+      circleY,
+      2,
+      Phaser.Display.Color.ValueToColor("0xffffff").color,
+      0.9
+    );
+
+    this.pathCircles.push(circle1);
+  }
+
+  clearPathCircles(): void {
+    this.pathCircles.forEach((circle) => {
+      circle.destroy();
+    });
+
+    this.pathCircles = [];
   }
 
   addRectangleOutline(tileX: number, tileY: number, color: number) {

@@ -1,11 +1,12 @@
 import "phaser";
-import natureTiles from "@assets/nature-tileset.png";
-import characters from "@assets/knights.png";
+import natureTiles from "@assets/images/nature-tileset.png";
+import characters from "@assets/images/knights.png";
 import MapRenderer from "@scripts/MapRenderer";
 import MapActor from "@scripts/MapActor";
 import TurnKeeper from "@scripts/TurnKeeper";
 import InputManager from "@scripts/InputManager";
 import MapTileset from "@scripts/MapTileset";
+import { generateNatureTilesetLevel } from "@utilities/levelGenerators";
 
 export default class Scene1 extends Phaser.Scene {
   graphics: Phaser.GameObjects.Graphics;
@@ -33,7 +34,15 @@ export default class Scene1 extends Phaser.Scene {
     this.graphics = this.add.graphics();
     this.camera = this.cameras.main;
 
-    this.mapTileset = new MapTileset(this, "nature-tiles", 32, 32);
+    this.mapTileset = new MapTileset(
+      this,
+      "nature-tiles",
+      32,
+      32,
+      generateNatureTilesetLevel,
+      [75, 76, 77, 95, 97, 115, 116, 117]
+    );
+
     this.mapRenderer = new MapRenderer(this, this.mapTileset);
     this.inputManager = new InputManager(this);
 
@@ -68,7 +77,6 @@ export default class Scene1 extends Phaser.Scene {
     this.turnKeeper.beginTrackingTurns();
 
     this.input.keyboard.on("keydown_ENTER", (event: KeyboardEvent) => {
-      console.log(event);
       this.turnKeeper.nextTurn();
     });
   }
@@ -77,8 +85,10 @@ export default class Scene1 extends Phaser.Scene {
 
   spawnActor(actor: MapActor, mapRenderer: MapRenderer): void {
     // randomly places actor on a tile
-    const randomTile = mapRenderer.randomTile(true);
-    this.mapTileset.setCollisionTile(randomTile);
+    const randomTile = mapRenderer.mapTileset.randomTile(
+      true,
+      mapRenderer.currentLayer
+    );
     return actor.spawn(randomTile.pixelX, randomTile.pixelY);
   }
 }

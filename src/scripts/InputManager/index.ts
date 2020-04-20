@@ -9,21 +9,21 @@ export default class InputManager {
   }
 
   enableActorMoveKeys(mapActor: MapActor) {
-    this.scene.input.keyboard.on("keydown_W", (event: KeyboardEvent) => {
-      mapActor.moveUp();
-    });
+    // this.scene.input.keyboard.on("keydown_W", (event: KeyboardEvent) => {
+    //   mapActor.moveUp();
+    // });
 
-    this.scene.input.keyboard.on("keydown_D", (event: KeyboardEvent) => {
-      mapActor.moveRight();
-    });
+    // this.scene.input.keyboard.on("keydown_D", (event: KeyboardEvent) => {
+    //   mapActor.moveRight();
+    // });
 
-    this.scene.input.keyboard.on("keydown_S", (event: KeyboardEvent) => {
-      mapActor.moveDown();
-    });
+    // this.scene.input.keyboard.on("keydown_S", (event: KeyboardEvent) => {
+    //   mapActor.moveDown();
+    // });
 
-    this.scene.input.keyboard.on("keydown_A", (event: KeyboardEvent) => {
-      mapActor.moveLeft();
-    });
+    // this.scene.input.keyboard.on("keydown_A", (event: KeyboardEvent) => {
+    //   mapActor.moveLeft();
+    // });
 
     this.scene.input.keyboard.on("keydown_UP", (event: KeyboardEvent) => {
       mapActor.moveUp();
@@ -70,20 +70,24 @@ export default class InputManager {
       cursor.moveLeft();
     });
 
-    this.scene.input.keyboard.on("keydown_UP", (event: KeyboardEvent) => {
-      cursor.moveUp();
-    });
+    // this.scene.input.keyboard.on("keydown_UP", (event: KeyboardEvent) => {
+    //   cursor.moveUp();
+    // });
 
-    this.scene.input.keyboard.on("keydown_RIGHT", (event: KeyboardEvent) => {
-      cursor.moveRight();
-    });
+    // this.scene.input.keyboard.on("keydown_RIGHT", (event: KeyboardEvent) => {
+    //   cursor.moveRight();
+    // });
 
-    this.scene.input.keyboard.on("keydown_DOWN", (event: KeyboardEvent) => {
-      cursor.moveDown();
-    });
+    // this.scene.input.keyboard.on("keydown_DOWN", (event: KeyboardEvent) => {
+    //   cursor.moveDown();
+    // });
 
-    this.scene.input.keyboard.on("keydown_LEFT", (event: KeyboardEvent) => {
-      cursor.moveLeft();
+    // this.scene.input.keyboard.on("keydown_LEFT", (event: KeyboardEvent) => {
+    //   cursor.moveLeft();
+    // });
+
+    this.scene.input.keyboard.on("keydown_SPACE", (event: KeyboardEvent) => {
+      cursor.cursorOwner.moveToTile(cursor.currentTile);
     });
   }
 

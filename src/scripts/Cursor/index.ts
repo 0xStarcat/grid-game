@@ -1,26 +1,30 @@
 import "phaser";
 import MapRenderer from "@scripts/MapRenderer";
+import MapActor from "@scripts/MapActor";
 
 export default class Cursor extends Phaser.GameObjects.GameObject {
   scene: Phaser.Scene;
   mapRenderer: MapRenderer;
+  cursorOwner: MapActor;
+  currentTile: Phaser.Tilemaps.Tile;
   x: number;
   y: number;
-  currentTile: Phaser.Tilemaps.Tile;
   color: number;
   rect: Phaser.GameObjects.Rectangle;
 
   constructor(
     scene: Phaser.Scene,
     mapRenderer: MapRenderer,
+    cursorOwner: MapActor,
     x: number,
     y: number
   ) {
     super(scene, "cursor");
     this.mapRenderer = mapRenderer;
+    this.cursorOwner = cursorOwner;
     this.x = x;
     this.y = y;
-    this.currentTile = mapRenderer.currentTile(x, y);
+    this.currentTile = this.mapRenderer.tileAt(this.x, this.y);
     this.color = Phaser.Display.Color.ValueToColor("0xffffff").color;
   }
 
@@ -36,6 +40,9 @@ export default class Cursor extends Phaser.GameObjects.GameObject {
       this.color
     );
 
+    this.x = tile.pixelX;
+    this.y = tile.pixelY;
+
     return this.rect;
   }
 
@@ -49,18 +56,30 @@ export default class Cursor extends Phaser.GameObjects.GameObject {
   }
 
   moveUp() {
-    this.move(this.mapRenderer.upTile(this.currentTile));
+    const nextTile = this.mapRenderer.upTile(this.currentTile);
+
+    this.move(nextTile);
+    this.cursorOwner.pathMaker.extendPath(nextTile);
   }
 
   moveRight() {
-    this.move(this.mapRenderer.rightTile(this.currentTile));
+    const nextTile = this.mapRenderer.rightTile(this.currentTile);
+
+    this.move(nextTile);
+    this.cursorOwner.pathMaker.extendPath(nextTile);
   }
 
   moveDown() {
-    this.move(this.mapRenderer.downTile(this.currentTile));
+    const nextTile = this.mapRenderer.downTile(this.currentTile);
+
+    this.move(nextTile);
+    this.cursorOwner.pathMaker.extendPath(nextTile);
   }
 
   moveLeft() {
-    this.move(this.mapRenderer.leftTile(this.currentTile));
+    const nextTile = this.mapRenderer.leftTile(this.currentTile);
+
+    this.move(nextTile);
+    this.cursorOwner.pathMaker.extendPath(nextTile);
   }
 }
