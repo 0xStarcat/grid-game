@@ -1,13 +1,15 @@
 import GameScene from "@scripts/GameScene";
 import MapActor from "@scripts/MapActor";
+import UpdateSubscriber from "@scripts/UpdateSubscriber";
 
-export default class GridMoveAnimation {
+export default class GridMoveAnimation extends UpdateSubscriber {
   scene: GameScene;
   parent: MapActor;
   startTile: Phaser.Tilemaps.Tile;
   endTile: Phaser.Tilemaps.Tile;
   duration: number;
   callback: Function;
+  updateSubscriber: UpdateSubscriber;
 
   constructor(
     scene: GameScene,
@@ -17,17 +19,20 @@ export default class GridMoveAnimation {
     duration: number,
     callback: Function
   ) {
-    this.scene = scene;
+    super(scene);
     this.parent = parent;
-    this.callback = callback;
     this.startTile = startTile;
     this.endTile = endTile;
     this.duration = duration;
+    this.callback = callback;
 
-    this.scene.updateSubscribers.push(this);
+    // this.chain
+    // this.callback
+
+    this.scene.subscribeToUpdate(this);
   }
 
-  update() {
+  onUpdate() {
     const endX = this.endTile.pixelX + this.parent.spriteWidth / 2;
     const endY = this.endTile.pixelY + this.parent.spriteHeight / 2;
 
@@ -49,15 +54,7 @@ export default class GridMoveAnimation {
 
     if (this.parent.sprite.x === endX && this.parent.sprite.y === endY) {
       this.callback();
-      this.destroy();
+      this.stop();
     }
-  }
-
-  destroy() {
-    const index = this.scene.updateSubscribers.indexOf(this);
-    this.scene.updateSubscribers = [
-      ...this.scene.updateSubscribers.slice(0, index),
-      ...this.scene.updateSubscribers.slice(index + 1),
-    ];
   }
 }

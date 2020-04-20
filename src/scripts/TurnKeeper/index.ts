@@ -41,6 +41,7 @@ export default class TurnKeeper {
   afterTurn(): void {
     this.turnOwner.turnIndicator.destroy();
     this.inputManager.resetActorMoveKeys();
+    this.inputManager.resetCursorMoveKeys();
     this.turnOwner.pathMaker.clearPath();
   }
 

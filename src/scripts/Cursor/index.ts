@@ -62,7 +62,7 @@ export default class Cursor extends Phaser.GameObjects.GameObject {
   }
 
   move(tile: Phaser.Tilemaps.Tile) {
-    if (tile.properties.borderTile) return;
+    if (tile.collides) return;
     this.render(tile);
   }
 

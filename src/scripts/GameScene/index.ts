@@ -6,11 +6,8 @@ import MapActor from "@scripts/MapActor";
 import TurnKeeper from "@scripts/TurnKeeper";
 import InputManager from "@scripts/InputManager";
 import MapTileset from "@scripts/MapTileset";
-import { generateNatureTilesetLevel } from "@utilities/levelGenerators";
 
-interface UpdateSubscriber {
-  update: Function;
-}
+import { generateNatureTilesetLevel } from "@utilities/levelGenerators";
 
 export default class GameScene extends Phaser.Scene {
   graphics: Phaser.GameObjects.Graphics;
@@ -19,7 +16,7 @@ export default class GameScene extends Phaser.Scene {
   mapTileset: MapTileset;
   inputManager: InputManager;
   turnKeeper: TurnKeeper;
-  updateSubscribers: UpdateSubscriber[];
+  updateSubscribers: UpdateSubscribable[];
   actor1: MapActor;
   actor2: MapActor;
 
@@ -52,25 +49,11 @@ export default class GameScene extends Phaser.Scene {
     this.mapRenderer = new MapRenderer(this, this.mapTileset);
     this.inputManager = new InputManager(this);
 
-    this.actor1 = new MapActor(
-      this,
-      this.mapRenderer,
-      32,
-      16,
-      "characters",
-      19
-    );
+    this.actor1 = new MapActor(this, 32, 16, "characters", 19);
 
     this.spawnActor(this.actor1, this.mapRenderer);
 
-    this.actor2 = new MapActor(
-      this,
-      this.mapRenderer,
-      32,
-      16,
-      "characters",
-      20
-    );
+    this.actor2 = new MapActor(this, 32, 16, "characters", 20);
 
     this.spawnActor(this.actor2, this.mapRenderer);
 
@@ -91,6 +74,10 @@ export default class GameScene extends Phaser.Scene {
     this.updateSubscribers.forEach((subscriber) => {
       subscriber.update();
     });
+  }
+
+  subscribeToUpdate(subscriber: UpdateSubscribable) {
+    this.updateSubscribers.push(subscriber);
   }
 
   spawnActor(actor: MapActor, mapRenderer: MapRenderer): void {

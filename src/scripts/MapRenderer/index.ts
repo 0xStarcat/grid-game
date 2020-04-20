@@ -53,25 +53,25 @@ export default class MapRenderer {
     );
   }
 
-  addPathCircles(
-    path: Phaser.Tilemaps.Tile[],
-    tile: Phaser.Tilemaps.Tile
-  ): void {
-    const tileIndex = path.indexOf(tile);
-    const prevTile = path[tileIndex - 1];
+  addPathCircles(path: Phaser.Tilemaps.Tile[]): void {
+    this.clearPathCircles();
+    path.forEach((tile) => {
+      const tileIndex = path.indexOf(tile);
+      const prevTile = path[tileIndex - 1];
 
-    // adds path circle to prev / current tile connecting face
-    if (prevTile === this.upTile(tile)) {
-      this.addPathCircle(tile, "up");
-    } else if (prevTile === this.rightTile(tile)) {
-      this.addPathCircle(tile, "right");
-    } else if (prevTile === this.downTile(tile)) {
-      this.addPathCircle(tile, "down");
-    } else if (prevTile === this.leftTile(tile)) {
-      this.addPathCircle(tile, "left");
-    }
+      // adds path circle to prev / current tile connecting face
+      if (prevTile === this.upTile(tile)) {
+        this.addPathCircle(tile, "up");
+      } else if (prevTile === this.rightTile(tile)) {
+        this.addPathCircle(tile, "right");
+      } else if (prevTile === this.downTile(tile)) {
+        this.addPathCircle(tile, "down");
+      } else if (prevTile === this.leftTile(tile)) {
+        this.addPathCircle(tile, "left");
+      }
 
-    this.addPathCircle(tile, "center");
+      this.addPathCircle(tile, "center");
+    });
   }
 
   addPathCircle(

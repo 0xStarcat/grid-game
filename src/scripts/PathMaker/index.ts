@@ -24,8 +24,14 @@ export default class PathMaker {
 
   extendPath(tile: Phaser.Tilemaps.Tile): void {
     if (tile.collides) return;
-    this.path.push(tile);
-    this.mapRenderer.addPathCircles(this.path, tile);
+    if (this.path.indexOf(tile) > -1) {
+      // If path extends onto existing square, backtrack the path up to that point
+      this.path = this.path.slice(0, this.path.indexOf(tile) + 1);
+    } else {
+      this.path.push(tile);
+    }
+
+    this.mapRenderer.addPathCircles(this.path);
   }
 
   clearPath() {

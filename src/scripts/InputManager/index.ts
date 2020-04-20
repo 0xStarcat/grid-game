@@ -92,7 +92,11 @@ export default class InputManager {
     // });
 
     this.scene.input.keyboard.on("keydown_SPACE", (event: KeyboardEvent) => {
-      cursor.cursorOwner.moveToTile(cursor.currentTile);
+      // cursor.cursorOwner.moveToTile(cursor.currentTile);
+      cursor.cursorOwner.actionManager.pathMove(
+        cursor.cursorOwner.pathMaker.path,
+        this.scene.turnKeeper.nextTurn.bind(this.scene.turnKeeper)
+      );
     });
   }
 
@@ -105,5 +109,6 @@ export default class InputManager {
     this.scene.input.keyboard.off("keydown_RIGHT");
     this.scene.input.keyboard.off("keydown_DOWN");
     this.scene.input.keyboard.off("keydown_LEFT");
+    this.scene.input.keyboard.off("keydown_SPACE");
   }
 }
