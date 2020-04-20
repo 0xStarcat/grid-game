@@ -109,6 +109,7 @@ export default class MapActor {
     this.scene.inputManager.resetActorMoveKeys();
 
     this.turnIndicator = null;
+    this.scene.mapRenderer.clearPathCircles();
   }
 
   move(x: number, y: number): void {
