@@ -1,9 +1,10 @@
 import "phaser";
 import MapRenderer from "@scripts/MapRenderer";
 import MapActor from "@scripts/MapActor";
+import GameScene from "@scripts/GameScene";
 
 export default class Cursor extends Phaser.GameObjects.GameObject {
-  scene: Phaser.Scene;
+  scene: GameScene;
   mapRenderer: MapRenderer;
   cursorOwner: MapActor;
   currentTile: Phaser.Tilemaps.Tile;
@@ -13,7 +14,7 @@ export default class Cursor extends Phaser.GameObjects.GameObject {
   rect: Phaser.GameObjects.Rectangle;
 
   constructor(
-    scene: Phaser.Scene,
+    scene: GameScene,
     mapRenderer: MapRenderer,
     cursorOwner: MapActor,
     x: number,
@@ -39,6 +40,16 @@ export default class Cursor extends Phaser.GameObjects.GameObject {
       tile.pixelY,
       this.color
     );
+
+    this.scene.tweens.add({
+      targets: this.rect,
+      scaleX: 0.8,
+      scaleY: 0.8,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+      repeatDelay: 100,
+    });
 
     this.x = tile.pixelX;
     this.y = tile.pixelY;

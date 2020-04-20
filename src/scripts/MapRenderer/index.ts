@@ -1,15 +1,16 @@
 import Cursor from "@scripts/Cursor/index";
 import MapTileset from "@scripts/MapTileset";
+import GameScene from "@scripts/GameScene";
 
 export default class MapRenderer {
-  scene: Phaser.Scene;
+  scene: GameScene;
   mapTileset: MapTileset;
 
   currentLayer: Phaser.Tilemaps.StaticTilemapLayer;
   cursor: Cursor;
   pathCircles: Phaser.GameObjects.Arc[];
 
-  constructor(scene: Phaser.Scene, mapTileset: MapTileset) {
+  constructor(scene: GameScene, mapTileset: MapTileset) {
     this.scene = scene;
     this.mapTileset = mapTileset;
     this.currentLayer = this.mapTileset.layers[0];

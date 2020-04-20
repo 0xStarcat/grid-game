@@ -1,6 +1,6 @@
 import "phaser";
 
-import Scene1 from "@scenes/Scene1";
+import GameScene from "@scripts/GameScene";
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -12,7 +12,7 @@ const config: Phaser.Types.Core.GameConfig = {
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
   backgroundColor: "#DFA",
-  scene: [Scene1],
+  scene: [new GameScene("Scene 1")],
 };
 
 export class Game extends Phaser.Game {

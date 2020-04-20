@@ -8,18 +8,23 @@ import InputManager from "@scripts/InputManager";
 import MapTileset from "@scripts/MapTileset";
 import { generateNatureTilesetLevel } from "@utilities/levelGenerators";
 
-export default class Scene1 extends Phaser.Scene {
+interface UpdateSubscriber {
+  update: Function;
+}
+
+export default class GameScene extends Phaser.Scene {
   graphics: Phaser.GameObjects.Graphics;
   camera: Phaser.Cameras.Scene2D.Camera;
   mapRenderer: MapRenderer;
   mapTileset: MapTileset;
   inputManager: InputManager;
   turnKeeper: TurnKeeper;
+  updateSubscribers: UpdateSubscriber[];
   actor1: MapActor;
   actor2: MapActor;
 
-  constructor() {
-    super("gameMenu");
+  constructor(name: string) {
+    super(name);
   }
 
   preload() {
@@ -31,6 +36,7 @@ export default class Scene1 extends Phaser.Scene {
   }
 
   create() {
+    this.updateSubscribers = [];
     this.graphics = this.add.graphics();
     this.camera = this.cameras.main;
 
@@ -81,7 +87,11 @@ export default class Scene1 extends Phaser.Scene {
     });
   }
 
-  update() {}
+  update(): void {
+    this.updateSubscribers.forEach((subscriber) => {
+      subscriber.update();
+    });
+  }
 
   spawnActor(actor: MapActor, mapRenderer: MapRenderer): void {
     // randomly places actor on a tile

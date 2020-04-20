@@ -1,6 +1,7 @@
-import MapRenderer from "scripts/MapRenderer";
+import MapRenderer from "@scripts/MapRenderer";
+import GameScene from "@scripts/GameScene";
 import PathMaker from "@scripts/PathMaker";
-
+import GridMoveAnimation from "@scripts/GridMoveAnimation";
 /*
  * @classdesc
  * The base class for characters rendered on a tilemap
@@ -13,7 +14,7 @@ import PathMaker from "@scripts/PathMaker";
  * @param {MapRenderer} mapRenderer
  */
 export default class MapActor {
-  scene: Phaser.Scene;
+  scene: GameScene;
   mapRenderer: MapRenderer;
   pathMaker: PathMaker;
   spriteWidth: number;
@@ -22,9 +23,10 @@ export default class MapActor {
   spritesheetIndex: number;
   turnIndicator: Phaser.GameObjects.Rectangle;
   sprite: Phaser.GameObjects.Sprite;
+  moveAnimation: GridMoveAnimation;
 
   constructor(
-    scene: Phaser.Scene,
+    scene: GameScene,
     mapRenderer: MapRenderer,
     spriteWidth: number,
     spriteHeight: number,
@@ -40,11 +42,16 @@ export default class MapActor {
     this.spritesheetName = spritesheetName;
     this.spritesheetIndex = spritesheetIndex;
     this.turnIndicator; // UI indicator for indicating it's this actor's turn
+    this.moveAnimation;
+
+    this.scene.updateSubscribers.push(this);
   }
 
   get currentTile(): Phaser.Tilemaps.Tile {
     return this.mapRenderer.tileAt(this.sprite.x, this.sprite.y);
   }
+
+  update() {}
 
   spawn(x: number, y: number): void {
     const centerX = x + this.spriteWidth / 2;
@@ -64,14 +71,39 @@ export default class MapActor {
     const newTile = this.mapRenderer.tileAt(x, y);
     if (newTile.collides) return;
     this.mapRenderer.mapTileset.handleMovementCollision(oldTile, newTile);
+
     this.sprite.x = x;
     this.sprite.y = y;
     this.pathMaker.resetPath();
     this.updateTurnIndicator();
   }
 
+  animatedMove(x: number, y: number, callBack: Function = () => {}): void {
+    const oldTile = this.currentTile;
+    const newTile = this.mapRenderer.tileAt(x, y);
+    if (newTile.collides) return;
+
+    this.scene.inputManager.resetActorMoveKeys();
+    this.moveAnimation = new GridMoveAnimation(
+      this.scene,
+      this,
+      oldTile,
+      newTile,
+      1000,
+      () => {
+        this.mapRenderer.mapTileset.handleMovementCollision(oldTile, newTile);
+        this.pathMaker.resetPath();
+        this.updateTurnIndicator();
+        callBack();
+      }
+    );
+  }
+
   moveUp(): void {
     const moveY = this.sprite.y - this.mapRenderer.mapTileset.tileHeight;
+
+    this.animatedMove(this.sprite.x, moveY);
+
     this.move(this.sprite.x, moveY);
   }
 
@@ -79,11 +111,17 @@ export default class MapActor {
     this.sprite.flipX = false;
 
     const moveX = this.sprite.x + this.mapRenderer.mapTileset.tileWidth;
+
+    this.animatedMove(moveX, this.sprite.y);
+
     this.move(moveX, this.sprite.y);
   }
 
   moveDown(): void {
     const moveY = this.sprite.y + this.mapRenderer.mapTileset.tileHeight;
+
+    this.animatedMove(this.sprite.x, moveY);
+
     this.move(this.sprite.x, moveY);
   }
 
@@ -91,7 +129,38 @@ export default class MapActor {
     this.sprite.flipX = true;
 
     const moveX = this.sprite.x - this.mapRenderer.mapTileset.tileWidth;
+
+    this.animatedMove(moveX, this.sprite.y);
+
     this.move(moveX, this.sprite.y);
+  }
+
+  animatedMoveUp(callback: Function = () => {}): void {
+    const moveY = this.sprite.y - this.mapRenderer.mapTileset.tileHeight;
+
+    this.animatedMove(this.sprite.x, moveY, callback);
+  }
+
+  animatedMoveRight(callback: Function = () => {}): void {
+    this.sprite.flipX = false;
+
+    const moveX = this.sprite.x + this.mapRenderer.mapTileset.tileWidth;
+
+    this.animatedMove(moveX, this.sprite.y, callback);
+  }
+
+  animatedMoveDown(callback: Function = () => {}): void {
+    const moveY = this.sprite.y + this.mapRenderer.mapTileset.tileHeight;
+
+    this.animatedMove(this.sprite.x, moveY, callback);
+  }
+
+  animatedMoveLeft(callback: Function = () => {}): void {
+    this.sprite.flipX = true;
+
+    const moveX = this.sprite.x - this.mapRenderer.mapTileset.tileWidth;
+
+    this.animatedMove(moveX, this.sprite.y, callback);
   }
 
   moveToTile(tile: Phaser.Tilemaps.Tile) {
@@ -108,16 +177,6 @@ export default class MapActor {
       this.currentTile.pixelY,
       Phaser.Display.Color.ValueToColor("0xefc53f").color
     );
-
-    this.scene.tweens.add({
-      targets: rect,
-      scaleX: 0.8,
-      scaleY: 0.8,
-      yoyo: true,
-      repeat: -1,
-      ease: "Sine.easeInOut",
-      repeatDelay: 4000,
-    });
 
     this.turnIndicator = rect;
   }

@@ -1,11 +1,16 @@
 import MapActor from "@scripts/MapActor";
 import Cursor from "@scripts/Cursor";
+import GameScene from "@scripts/GameScene";
 
 export default class InputManager {
-  scene: Phaser.Scene;
+  scene: GameScene;
 
-  constructor(scene: Phaser.Scene) {
+  constructor(scene: GameScene) {
     this.scene = scene;
+  }
+
+  moveEndCallback() {
+    this.scene.turnKeeper.nextTurn();
   }
 
   enableActorMoveKeys(mapActor: MapActor) {
@@ -26,19 +31,19 @@ export default class InputManager {
     // });
 
     this.scene.input.keyboard.on("keydown_UP", (event: KeyboardEvent) => {
-      mapActor.moveUp();
+      mapActor.animatedMoveUp(this.moveEndCallback.bind(this));
     });
 
     this.scene.input.keyboard.on("keydown_RIGHT", (event: KeyboardEvent) => {
-      mapActor.moveRight();
+      mapActor.animatedMoveRight(this.moveEndCallback.bind(this));
     });
 
     this.scene.input.keyboard.on("keydown_DOWN", (event: KeyboardEvent) => {
-      mapActor.moveDown();
+      mapActor.animatedMoveDown(this.moveEndCallback.bind(this));
     });
 
     this.scene.input.keyboard.on("keydown_LEFT", (event: KeyboardEvent) => {
-      mapActor.moveLeft();
+      mapActor.animatedMoveLeft(this.moveEndCallback.bind(this));
     });
   }
 

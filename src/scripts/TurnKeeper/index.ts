@@ -1,9 +1,10 @@
 import MapRenderer from "@scripts/MapRenderer";
 import InputManager from "@scripts/InputManager";
 import MapActor from "@scripts/MapActor";
+import GameScene from "@scripts/GameScene";
 
 export default class TurnKeeper {
-  scene: Phaser.Scene;
+  scene: GameScene;
   mapRenderer: MapRenderer;
   inputManager: InputManager;
   participants: MapActor[];
@@ -11,7 +12,7 @@ export default class TurnKeeper {
   turnCount: number;
 
   constructor(
-    scene: Phaser.Scene,
+    scene: GameScene,
     mapRenderer: MapRenderer,
     inputManager: InputManager,
     participants: MapActor[] = []

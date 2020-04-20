@@ -1,5 +1,7 @@
+import GameScene from "@scripts/GameScene";
+
 export default class MapTileset {
-  scene: Phaser.Scene;
+  scene: GameScene;
   tileImageName: string;
   tileWidth: number;
   tileHeight: number;
@@ -12,7 +14,7 @@ export default class MapTileset {
   borderTiles: number[];
 
   constructor(
-    scene: Phaser.Scene,
+    scene: GameScene,
     tileImageName: string,
     tileWidth: number,
     tileHeight: number,

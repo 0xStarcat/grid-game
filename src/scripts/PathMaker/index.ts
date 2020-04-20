@@ -1,18 +1,15 @@
 import MapRenderer from "@scripts/MapRenderer";
 import MapActor from "@scripts/MapActor";
+import GameScene from "@scripts/GameScene";
 
 export default class PathMaker {
-  scene: Phaser.Scene;
+  scene: GameScene;
   mapRenderer: MapRenderer;
   mapActor: MapActor;
   origin: Phaser.Tilemaps.Tile;
   path: Phaser.Tilemaps.Tile[];
 
-  constructor(
-    scene: Phaser.Scene,
-    mapActor: MapActor,
-    mapRenderer: MapRenderer
-  ) {
+  constructor(scene: GameScene, mapActor: MapActor, mapRenderer: MapRenderer) {
     this.scene = scene;
     this.mapActor = mapActor;
     this.mapRenderer = mapRenderer;
