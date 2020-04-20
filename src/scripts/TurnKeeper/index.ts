@@ -31,7 +31,10 @@ export default class TurnKeeper {
     this.turnOwner.pathMaker.resetPath();
     this.mapRenderer.cursor.cursorOwner = this.turnOwner;
     this.mapRenderer.cursor.render(this.turnOwner.currentTile);
-    this.turnOwner.addTurnIndicator();
+    this.turnOwner.addTurnIndicator(
+      this.turnOwner.currentTile.pixelX,
+      this.turnOwner.currentTile.pixelY
+    );
   }
 
   beginTurn(): void {}
