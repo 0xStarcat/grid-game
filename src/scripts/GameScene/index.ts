@@ -63,11 +63,8 @@ export default class GameScene extends Phaser.Scene {
       this.inputManager,
       [this.actor1, this.actor2]
     );
-    this.turnKeeper.beginTrackingTurns();
 
-    this.input.keyboard.on("keydown_ENTER", (event: KeyboardEvent) => {
-      this.turnKeeper.nextTurn();
-    });
+    this.turnKeeper.beginTrackingTurns();
   }
 
   update(): void {

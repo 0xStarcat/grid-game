@@ -8,6 +8,7 @@ export default class ActionManager {
   actionQueue: Action[];
   currentAction: Action;
   onQueueComplete: Function;
+  actionMode: "move" | "attack";
 
   constructor(scene: GameScene, mapActor: MapActor) {
     this.scene = scene;
@@ -15,9 +16,11 @@ export default class ActionManager {
     this.actionQueue = [];
     this.currentAction;
     this.onQueueComplete;
+    this.actionMode = "move"; // the actionMode for the actor (move | attack)
   }
 
   beginActionQueue() {
+    this.scene.inputManager.disableKeys();
     this.currentAction = this.actionQueue[0];
     this.beforeAction();
     this.executeAction();
@@ -44,6 +47,24 @@ export default class ActionManager {
   updateCurrentAction() {
     this.actionQueue.shift();
     this.currentAction = this.actionQueue[0];
+  }
+
+  toggleActionMode() {
+    if (this.actionMode === "move") {
+      this.setAttackMode();
+    } else if (this.actionMode === "attack") {
+      this.setMoveMode();
+    }
+  }
+
+  setAttackMode() {
+    this.actionMode = "attack";
+    this.scene.mapRenderer.clearPathCircles();
+  }
+
+  setMoveMode() {
+    this.actionMode = "move";
+    this.scene.mapRenderer.addPathCircles(this.pathMaker.path);
   }
 
   pathMove(path: Phaser.Tilemaps.Tile[], callback: Function) {

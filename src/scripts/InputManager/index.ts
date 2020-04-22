@@ -9,6 +9,11 @@ export default class InputManager {
     this.scene = scene;
   }
 
+  disableKeys() {
+    this.resetActorMoveKeys();
+    this.resetCursorMoveKeys();
+  }
+
   moveEndCallback() {
     this.scene.turnKeeper.nextTurn();
   }
@@ -59,9 +64,13 @@ export default class InputManager {
       mapActor.cursor.moveLeft();
     });
 
+    this.scene.input.keyboard.on("keydown_ENTER", (event: KeyboardEvent) => {
+      // this.scene.turnKeeper.nextTurn();
+      mapActor.actionManager.toggleActionMode();
+    });
+
     this.scene.input.keyboard.on("keydown_SPACE", (event: KeyboardEvent) => {
-      if (!mapActor.pathMaker.path.length) return;
-      this.resetCursorMoveKeys();
+      if (mapActor.pathMaker.path.length < 2) return;
       mapActor.actionManager.pathMove(
         mapActor.pathMaker.path,
         this.scene.turnKeeper.nextTurn.bind(this.scene.turnKeeper)
@@ -75,5 +84,6 @@ export default class InputManager {
     this.scene.input.keyboard.off("keydown_S");
     this.scene.input.keyboard.off("keydown_A");
     this.scene.input.keyboard.off("keydown_SPACE");
+    this.scene.input.keyboard.off("keydown_ENTER");
   }
 }

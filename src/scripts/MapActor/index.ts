@@ -41,8 +41,8 @@ export default class MapActor {
     this.spriteHeight = spriteHeight;
     this.spritesheetName = spritesheetName;
     this.spritesheetIndex = spritesheetIndex;
+    this.moveAnimation; // the current movement from oldTile to newTile
     this._turnIndicator; // UI indicator for indicating it's this actor's turn
-    this.moveAnimation;
   }
 
   get currentTile(): Phaser.Tilemaps.Tile {
@@ -116,11 +116,15 @@ export default class MapActor {
     const oldTile = this.currentTile;
     const newTile = this.scene.mapRenderer.tileAt(x, y);
     if (newTile.collides) return;
-    this.addTurnIndicator(newTile.pixelX, newTile.pixelY);
-    this.scene.mapRenderer.mapTileset.handleMovementCollision(oldTile, newTile);
+    this.scene.mapRenderer.mapTileset.handleActorMovement(
+      this,
+      oldTile,
+      newTile
+    );
 
     this.sprite.x = x;
     this.sprite.y = y;
+    this.pathMaker.updatePathOrigin();
   }
 
   animatedMove(x: number, y: number, callBack: Function = () => {}): void {
@@ -137,12 +141,12 @@ export default class MapActor {
       newTile,
       1000,
       () => {
-        this.scene.mapRenderer.mapTileset.handleMovementCollision(
+        this.scene.mapRenderer.mapTileset.handleActorMovement(
+          this,
           oldTile,
           newTile
         );
-        this.pathMaker.path.shift();
-        this.scene.mapRenderer.addPathCircles(this.pathMaker.path);
+        this.pathMaker.completePathStep();
         callBack();
       }
     );

@@ -18,14 +18,26 @@ export default class PathMaker {
   }
 
   resetPath() {
-    this.origin = this.mapActor.currentTile;
+    this.updatePathOrigin();
     this.path = [this.origin];
+    this.mapRenderer.clearPathCircles();
+  }
+
+  updatePathOrigin() {
+    this.origin = this.mapActor.currentTile;
+  }
+
+  completePathStep() {
+    this.path.shift();
+    this.updatePathOrigin();
+    this.scene.mapRenderer.addPathCircles(this.path);
   }
 
   extendPath(tile: Phaser.Tilemaps.Tile): void {
+    if (tile === this.origin) this.resetPath(); // clear path if extended to origin
     if (tile.collides) return;
-    // add origin if empty path
-    if (!this.path.length) this.resetPath();
+    if (!this.path.length) this.resetPath(); // add origin if empty path
+
     if (this.path.indexOf(tile) > -1) {
       // If path extends onto existing square, backtrack the path up to that point
       this.path = this.path.slice(0, this.path.indexOf(tile) + 1);
@@ -34,10 +46,5 @@ export default class PathMaker {
     }
 
     this.mapRenderer.addPathCircles(this.path);
-  }
-
-  clearPath() {
-    this.path = [];
-    this.mapRenderer.clearPathCircles();
   }
 }

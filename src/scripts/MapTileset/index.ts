@@ -1,4 +1,5 @@
 import GameScene from "@scripts/GameScene";
+import MapActor from "@scripts/MapActor";
 
 export default class MapTileset {
   scene: GameScene;
@@ -71,22 +72,25 @@ export default class MapTileset {
     });
   }
 
-  setCollisionTile(tile: Phaser.Tilemaps.Tile) {
+  setMovementTile(actor: MapActor, tile: Phaser.Tilemaps.Tile) {
+    tile.properties.actor = actor;
     tile.properties.collides = true;
     this.map.setCollisionByProperty({ collides: true }, true);
   }
 
-  unsetCollisionTile(tile: Phaser.Tilemaps.Tile) {
+  unsetMovementTile(actor: MapActor, tile: Phaser.Tilemaps.Tile) {
+    tile.properties.actor = actor;
     tile.properties.collides = false;
     this.map.setCollisionByProperty({ collides: false }, false);
   }
 
-  handleMovementCollision(
+  handleActorMovement(
+    actor: MapActor,
     oldTile: Phaser.Tilemaps.Tile,
     newTile: Phaser.Tilemaps.Tile
   ) {
-    this.unsetCollisionTile(oldTile);
-    this.setCollisionTile(newTile);
+    this.unsetMovementTile(actor, oldTile);
+    this.setMovementTile(actor, newTile);
   }
 
   randomTile(
