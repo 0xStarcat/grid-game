@@ -68,6 +68,13 @@ export default class Cursor extends Phaser.GameObjects.GameObject {
     this.renderAt(tile);
   }
 
+  moveActionTo(tile: Phaser.Tilemaps.Tile) {
+    console.log(tile.neighbors());
+    if (tile.properties.actor !== this.cursorOwner && tile.collides) return; // if not tile owner and it collides
+    this.renderAt(tile);
+    this.cursorOwner.pathMaker.extendPath(tile);
+  }
+
   moveUp() {
     const nextTile = this.mapRenderer.upTile(this.currentTile);
 

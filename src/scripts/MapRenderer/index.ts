@@ -13,7 +13,6 @@ export default class MapRenderer {
     this.mapTileset = mapTileset;
     this.currentLayer = this.mapTileset.layers[0];
     this.pathCircles = [];
-
     // show grid
     this.createMoveableGrid();
   }

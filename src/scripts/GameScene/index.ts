@@ -1,4 +1,5 @@
 import "phaser";
+import "@scripts/TileExtension";
 import natureTiles from "@assets/images/nature-tileset.png";
 import characters from "@assets/images/knights.png";
 import MapRenderer from "@scripts/MapRenderer";

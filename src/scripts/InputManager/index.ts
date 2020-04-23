@@ -64,17 +64,24 @@ export default class InputManager {
       mapActor.cursor.moveLeft();
     });
 
-    this.scene.input.keyboard.on("keydown_ENTER", (event: KeyboardEvent) => {
+    this.scene.input.keyboard.on("keydown_SPACE", (event: KeyboardEvent) => {
       // this.scene.turnKeeper.nextTurn();
       mapActor.actionManager.toggleActionMode();
     });
 
-    this.scene.input.keyboard.on("keydown_SPACE", (event: KeyboardEvent) => {
+    this.scene.input.on("pointerdown", (event: KeyboardEvent) => {
       if (mapActor.pathMaker.path.length < 2) return;
       mapActor.actionManager.pathMove(
         mapActor.pathMaker.path,
         this.scene.turnKeeper.nextTurn.bind(this.scene.turnKeeper)
       );
+    });
+
+    this.scene.input.on("pointermove", (event: PointerEvent) => {
+      const tile = this.scene.mapRenderer.tileAt(event.x, event.y);
+      if (tile) {
+        mapActor.cursor.moveActionTo(tile);
+      }
     });
   }
 
@@ -84,6 +91,7 @@ export default class InputManager {
     this.scene.input.keyboard.off("keydown_S");
     this.scene.input.keyboard.off("keydown_A");
     this.scene.input.keyboard.off("keydown_SPACE");
-    this.scene.input.keyboard.off("keydown_ENTER");
+    this.scene.input.off("pointerdown");
+    this.scene.input.off("pointermove");
   }
 }

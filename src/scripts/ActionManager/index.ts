@@ -64,7 +64,7 @@ export default class ActionManager {
 
   setMoveMode() {
     this.actionMode = "move";
-    this.scene.mapRenderer.addPathCircles(this.pathMaker.path);
+    this.scene.mapRenderer.addPathCircles(this.mapActor.pathMaker.path);
   }
 
   pathMove(path: Phaser.Tilemaps.Tile[], callback: Function) {
