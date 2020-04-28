@@ -73,7 +73,7 @@ export default class ActionManager {
       const prevTile = path[index - 1];
       if (!prevTile) return;
       // determine the direction of each tile from the previous to determine which move animation to run
-      if (prevTile === this.scene.mapRenderer.upTile(tile)) {
+      if (prevTile === tile.topNeighbor) {
         this.actionQueue.push(
           new Action(
             this.scene,
@@ -81,7 +81,7 @@ export default class ActionManager {
             this.nextAction.bind(this)
           )
         );
-      } else if (prevTile === this.scene.mapRenderer.rightTile(tile)) {
+      } else if (prevTile === tile.rightNeighbor) {
         this.actionQueue.push(
           new Action(
             this.scene,
@@ -89,7 +89,7 @@ export default class ActionManager {
             this.nextAction.bind(this)
           )
         );
-      } else if (prevTile === this.scene.mapRenderer.downTile(tile)) {
+      } else if (prevTile === tile.bottomNeighbor) {
         this.actionQueue.push(
           new Action(
             this.scene,
@@ -97,7 +97,7 @@ export default class ActionManager {
             this.nextAction.bind(this)
           )
         );
-      } else if (prevTile === this.scene.mapRenderer.leftTile(tile)) {
+      } else if (prevTile === tile.leftNeighbor) {
         this.actionQueue.push(
           new Action(
             this.scene,

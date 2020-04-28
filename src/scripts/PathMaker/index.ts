@@ -1,6 +1,7 @@
 import MapRenderer from "@scripts/MapRenderer";
 import MapActor from "@scripts/MapActor";
 import GameScene from "@scripts/GameScene";
+import AStarPathfinder from "@scripts/AStarPathfinder";
 
 export default class PathMaker {
   scene: GameScene;
@@ -34,6 +35,7 @@ export default class PathMaker {
   }
 
   extendPath(tile: Phaser.Tilemaps.Tile): void {
+    // adds a single tile to the path
     if (tile === this.origin) this.resetPath(); // clear path if extended to origin
     if (tile.collides) return;
     if (!this.path.length) this.resetPath(); // add origin if empty path
@@ -45,6 +47,18 @@ export default class PathMaker {
       this.path.push(tile);
     }
 
+    this.mapRenderer.addPathCircles(this.path);
+  }
+
+  generatePath(end: Phaser.Tilemaps.Tile) {
+    // uses AI pathfinding to find the path
+    const pathfinder = new AStarPathfinder(
+      this.mapActor.currentTile,
+      end,
+      this.mapRenderer.mapTileset.tiles
+    );
+
+    this.path = pathfinder.findPath();
     this.mapRenderer.addPathCircles(this.path);
   }
 }

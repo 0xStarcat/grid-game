@@ -21,48 +21,22 @@ export default class MapRenderer {
     return this.currentLayer.getTileAtWorldXY(x, y);
   }
 
-  upTile(currentTile: Phaser.Tilemaps.Tile) {
-    return this.currentLayer.getTileAtWorldXY(
-      currentTile.pixelX,
-      currentTile.pixelY - this.mapTileset.tileHeight
-    );
-  }
-
-  rightTile(currentTile: Phaser.Tilemaps.Tile) {
-    return this.currentLayer.getTileAtWorldXY(
-      currentTile.pixelX + this.mapTileset.tileWidth,
-      currentTile.pixelY
-    );
-  }
-
-  downTile(currentTile: Phaser.Tilemaps.Tile) {
-    return this.currentLayer.getTileAtWorldXY(
-      currentTile.pixelX,
-      currentTile.pixelY + this.mapTileset.tileHeight
-    );
-  }
-
-  leftTile(currentTile: Phaser.Tilemaps.Tile) {
-    return this.currentLayer.getTileAtWorldXY(
-      currentTile.pixelX - this.mapTileset.tileWidth,
-      currentTile.pixelY
-    );
-  }
-
   addPathCircles(path: Phaser.Tilemaps.Tile[]): void {
     this.clearPathCircles();
     path.forEach((tile) => {
+      // UI elements for 3 dots showing a path through a tile
+      // start from prev tile - middle - end to next tile
       const tileIndex = path.indexOf(tile);
       const prevTile = path[tileIndex - 1];
 
       // adds path circle to prev / current tile connecting face
-      if (prevTile === this.upTile(tile)) {
+      if (prevTile === tile.topNeighbor) {
         this.addPathCircle(tile, "up");
-      } else if (prevTile === this.rightTile(tile)) {
+      } else if (prevTile === tile.rightNeighbor) {
         this.addPathCircle(tile, "right");
-      } else if (prevTile === this.downTile(tile)) {
+      } else if (prevTile === tile.bottomNeighbor) {
         this.addPathCircle(tile, "down");
-      } else if (prevTile === this.leftTile(tile)) {
+      } else if (prevTile === tile.leftNeighbor) {
         this.addPathCircle(tile, "left");
       }
 
@@ -74,6 +48,7 @@ export default class MapRenderer {
     tile: Phaser.Tilemaps.Tile,
     face: "up" | "right" | "down" | "left" | "center"
   ) {
+    // single UI path dot at point
     const centerX = this.mapTileset.tileWidth / 2;
     const centerY = this.mapTileset.tileHeight / 2;
 
@@ -118,6 +93,7 @@ export default class MapRenderer {
   }
 
   addRectangleOutline(tileX: number, tileY: number, color: number) {
+    // UI display rectangle around tile
     const rect = this.scene.add.rectangle(
       tileX + this.mapTileset.tileWidth / 2,
       tileY + this.mapTileset.tileHeight / 2,
@@ -131,6 +107,7 @@ export default class MapRenderer {
   }
 
   addGridSquare(tileX: number, tileY: number, color: number) {
+    // Adds Grid UI element
     // remember, grid origins are in the center
     // while tile origins are top left
     const gridSquare = this.scene.add.grid(

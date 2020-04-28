@@ -69,35 +69,35 @@ export default class Cursor extends Phaser.GameObjects.GameObject {
   }
 
   moveActionTo(tile: Phaser.Tilemaps.Tile) {
-    console.log(tile.neighbors());
     if (tile.properties.actor !== this.cursorOwner && tile.collides) return; // if not tile owner and it collides
     this.renderAt(tile);
-    this.cursorOwner.pathMaker.extendPath(tile);
+    // this.cursorOwner.pathMaker.extendPath(tile);
+    this.cursorOwner.pathMaker.generatePath(tile);
   }
 
   moveUp() {
-    const nextTile = this.mapRenderer.upTile(this.currentTile);
+    const nextTile = this.currentTile.topNeighbor;
 
     this.move(nextTile);
     this.cursorOwner.pathMaker.extendPath(nextTile);
   }
 
   moveRight() {
-    const nextTile = this.mapRenderer.rightTile(this.currentTile);
+    const nextTile = this.currentTile.rightNeighbor;
 
     this.move(nextTile);
     this.cursorOwner.pathMaker.extendPath(nextTile);
   }
 
   moveDown() {
-    const nextTile = this.mapRenderer.downTile(this.currentTile);
+    const nextTile = this.currentTile.bottomNeighbor;
 
     this.move(nextTile);
     this.cursorOwner.pathMaker.extendPath(nextTile);
   }
 
   moveLeft() {
-    const nextTile = this.mapRenderer.leftTile(this.currentTile);
+    const nextTile = this.currentTile.leftNeighbor;
 
     this.move(nextTile);
     this.cursorOwner.pathMaker.extendPath(nextTile);
