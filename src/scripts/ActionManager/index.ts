@@ -64,6 +64,7 @@ export default class ActionManager {
 
   setMoveMode() {
     this.actionMode = "move";
+    this.mapActor.pathMaker.generatePath(this.mapActor.cursor.currentTile);
     this.scene.mapRenderer.addPathCircles(this.mapActor.pathMaker.path);
   }
 
