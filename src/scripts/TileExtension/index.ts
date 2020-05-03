@@ -64,9 +64,11 @@ Object.defineProperty(Phaser.Tilemaps.Tile.prototype, "neighbors", {
 
 Object.defineProperty(Phaser.Tilemaps.Tile.prototype, "neighborsArray", {
   get(this: Phaser.Tilemaps.Tile) {
+    // rearranging the order of this array will skew the A* pathfinder's choices
+    // when evaluating neighbors that score equally in a path
     return [
-      this.topNeighbor,
       this.rightNeighbor,
+      this.topNeighbor,
       this.bottomNeighbor,
       this.leftNeighbor,
     ];

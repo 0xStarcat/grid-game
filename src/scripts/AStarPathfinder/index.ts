@@ -6,6 +6,10 @@ export default class AStarPathfinder {
   openSet: Phaser.Tilemaps.Tile[];
   closedSet: Phaser.Tilemaps.Tile[];
 
+  diagonalCost: integer;
+  orthogonalCost: integer;
+  manhattanD: number;
+
   constructor(
     start: Phaser.Tilemaps.Tile,
     end: Phaser.Tilemaps.Tile,
@@ -17,36 +21,42 @@ export default class AStarPathfinder {
 
     this.openSet = [];
     this.closedSet = [];
+
+    this.diagonalCost = 14; // 14
+    this.orthogonalCost = 10; // 10
+    this.manhattanD = 2; // higher numbers means tighter zig zags, lower (like 0.0001) mean bigger then tighter zigzags as approaching goal.
   }
 
   findPath() {
-    let openSet: Phaser.Tilemaps.Tile[] = []; // nodes being evaluated
-    let closedSet: Phaser.Tilemaps.Tile[] = []; // nodes already evaluated
+    // let openSet: Phaser.Tilemaps.Tile[] = []; // nodes being evaluated
+    // let closedSet: Phaser.Tilemaps.Tile[] = []; // nodes already evaluated
 
-    openSet.push(this.start);
+    this.openSet.push(this.start);
 
-    while (openSet.length > 0) {
-      let currentNode = openSet[0];
-      for (let i = 1; i < openSet.length; i++) {
+    while (this.openSet.length > 0) {
+      let currentNode = this.openSet[0];
+      for (let i = 1; i < this.openSet.length; i++) {
         // if iteration's fCost < currentNode's fCost
         // or iteration's fCost and current's are equal, yet iteration's hCost is lower
         if (
-          openSet[i].fCost < currentNode.fCost ||
-          openSet[i].fCost == currentNode.fCost
+          this.openSet[i].fCost < currentNode.fCost ||
+          this.openSet[i].fCost == currentNode.fCost
         ) {
-          if (openSet[i].hCost < currentNode.hCost) {
-            currentNode = openSet[i];
+          if (this.openSet[i].hCost < currentNode.hCost) {
+            currentNode = this.openSet[i];
           }
         }
       }
 
-      // remove from openSet
-      openSet = openSet.filter((node: Phaser.Tilemaps.Tile): boolean => {
-        return node !== currentNode;
-      });
+      // remove from this.openSet
+      this.openSet = this.openSet.filter(
+        (node: Phaser.Tilemaps.Tile): boolean => {
+          return node !== currentNode;
+        }
+      );
 
       // add to closed set: Evaluated.
-      closedSet.push(currentNode);
+      this.closedSet.push(currentNode);
 
       // found the path -- return the parent trace
       if (currentNode === this.end) {
@@ -56,7 +66,7 @@ export default class AStarPathfinder {
       // evaluate all the node's neighbors now
       currentNode.neighborsArray.forEach((neighborNode) => {
         // skips neighbor if collides or already evaluated
-        if (neighborNode.collides || closedSet.includes(neighborNode)) {
+        if (neighborNode.collides || this.closedSet.includes(neighborNode)) {
           return;
         }
 
@@ -65,30 +75,69 @@ export default class AStarPathfinder {
 
         if (
           movementCostToNeighbor < neighborNode.gCost ||
-          !openSet.includes(neighborNode)
+          !this.openSet.includes(neighborNode)
         ) {
           // calculates fCost for later evaluation via gCost + hCost
-          neighborNode.gCost = movementCostToNeighbor;
-          neighborNode.hCost = this.getGridDistance(neighborNode, this.end);
+          // neighborNode.gCost = movementCostToNeighbor; // << Using this one does NOT produce zigzags!
+          neighborNode.gCost = this.getGridDistance(this.start, neighborNode);
+          neighborNode.hCost = this.getManhattanDistance(
+            neighborNode,
+            this.end
+          );
 
           // sets the pathParent so the path can be retraced once found
           neighborNode.pathParent = currentNode;
 
-          // adds a fully fCosted neighbor to openSet for further evaluation next loop
-          if (!openSet.includes(neighborNode)) {
-            openSet.push(neighborNode);
+          // adds a fully fCosted neighbor to this.openSet for further evaluation next loop
+          if (!this.openSet.includes(neighborNode)) {
+            this.openSet.push(neighborNode);
+          } else if (
+            movementCostToNeighbor < neighborNode.gCost &&
+            this.openSet.includes(neighborNode)
+          ) {
+            // updates existing node if already in open set
+            const index = this.openSet.indexOf(neighborNode);
+            this.openSet[index] = neighborNode;
           }
+        } else {
+          // updates existing node if already in open set
+          this.closedSet.push(neighborNode);
         }
       });
     }
+
+    // no path found
+    return [this.start];
+  }
+
+  getManhattanDistance(
+    node: Phaser.Tilemaps.Tile,
+    endNode: Phaser.Tilemaps.Tile
+  ) {
+    const D = this.manhattanD;
+    const dx = Math.abs(node.x - endNode.x);
+    const dy = Math.abs(node.y - endNode.y);
+    return D * (dx + dy);
   }
 
   // non-diagonal distance between 2 nodes along x and y axis
-  getGridDistance(node1: Phaser.Tilemaps.Tile, node2: Phaser.Tilemaps.Tile) {
-    const distanceX = Math.abs(node1.x - node2.x);
-    const distanceY = Math.abs(node1.y - node2.y);
+  getGridDistance(node1: Phaser.Tilemaps.Tile, endNode: Phaser.Tilemaps.Tile) {
+    const distanceX = Math.abs(node1.x - endNode.x);
+    const distanceY = Math.abs(node1.y - endNode.y);
+    let distance;
 
-    return distanceX + distanceY;
+    if (distanceX > distanceY)
+      distance =
+        this.diagonalCost * distanceY +
+        this.orthogonalCost * (distanceX - distanceY);
+    else {
+      distance =
+        this.diagonalCost * distanceX +
+        this.orthogonalCost * (distanceY - distanceX);
+    }
+    // console.log(distance, distanceX + distanceY);
+    return distance;
+    // return distanceX + distanceY;
   }
 
   tracePath(start: Phaser.Tilemaps.Tile, end: Phaser.Tilemaps.Tile) {

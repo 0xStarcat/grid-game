@@ -9,6 +9,7 @@ export default class PathMaker {
   mapActor: MapActor;
   origin: Phaser.Tilemaps.Tile;
   path: Phaser.Tilemaps.Tile[];
+  evaluatedSquares: Phaser.GameObjects.Rectangle[];
 
   constructor(scene: GameScene, mapActor: MapActor, mapRenderer: MapRenderer) {
     this.scene = scene;
@@ -16,6 +17,7 @@ export default class PathMaker {
     this.mapRenderer = mapRenderer;
     this.origin;
     this.path = [];
+    this.evaluatedSquares = []; // debugging to view pathfinding sets
   }
 
   resetPath() {
@@ -59,6 +61,19 @@ export default class PathMaker {
     );
 
     this.path = pathfinder.findPath();
+
+    // debug open / closed sets
+    // this.evaluatedSquares.forEach((rect) => rect.destroy());
+    // pathfinder.closedSet.forEach((tile) => {
+    //   this.evaluatedSquares.push(
+    //     this.mapRenderer.addRectangleOutline(
+    //       tile.pixelX,
+    //       tile.pixelY,
+    //       Phaser.Display.Color.ValueToColor("0xFF0000").color
+    //     )
+    //   );
+    // });
+
     this.mapRenderer.addPathCircles(this.path);
   }
 }
