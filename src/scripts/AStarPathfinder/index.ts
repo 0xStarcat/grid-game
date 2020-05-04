@@ -24,12 +24,13 @@ export default class AStarPathfinder {
 
     this.diagonalCost = 14; // 14
     this.orthogonalCost = 10; // 10
-    this.manhattanD = 2; // higher numbers means tighter zig zags, lower (like 0.0001) mean bigger then tighter zigzags as approaching goal.
+    this.manhattanD = 0.0001; // higher numbers means tighter zig zags, lower (like 0.0001) mean bigger then tighter zigzags as approaching goal.
   }
 
-  findPath() {
-    // let openSet: Phaser.Tilemaps.Tile[] = []; // nodes being evaluated
-    // let closedSet: Phaser.Tilemaps.Tile[] = []; // nodes already evaluated
+  findPath(diagonals = false) {
+    const allowedNeighbors = diagonals
+      ? "neighborsAllArray"
+      : "neighborsOrthogonalArray";
 
     this.openSet.push(this.start);
 
@@ -49,11 +50,11 @@ export default class AStarPathfinder {
       }
 
       // remove from this.openSet
-      this.openSet = this.openSet.filter(
-        (node: Phaser.Tilemaps.Tile): boolean => {
-          return node !== currentNode;
-        }
-      );
+      const index = this.openSet.indexOf(currentNode);
+      this.openSet = [
+        ...this.openSet.slice(0, index),
+        ...this.openSet.slice(index + 1),
+      ];
 
       // add to closed set: Evaluated.
       this.closedSet.push(currentNode);
@@ -64,7 +65,7 @@ export default class AStarPathfinder {
       }
 
       // evaluate all the node's neighbors now
-      currentNode.neighborsArray.forEach((neighborNode) => {
+      currentNode[allowedNeighbors].forEach((neighborNode) => {
         // skips neighbor if collides or already evaluated
         if (neighborNode.collides || this.closedSet.includes(neighborNode)) {
           return;
@@ -78,7 +79,12 @@ export default class AStarPathfinder {
           !this.openSet.includes(neighborNode)
         ) {
           // calculates fCost for later evaluation via gCost + hCost
-          // neighborNode.gCost = movementCostToNeighbor; // << Using this one does NOT produce zigzags!
+
+          // Non-manhattan heuristic
+          // neighborNode.gCost = movementCostToNeighbor;
+          // neighborNode.hCost = this.getGridDistance(neighborNode, this.end);
+
+          // Manhattan Heuristic (bigger / better zigzags)
           neighborNode.gCost = this.getGridDistance(this.start, neighborNode);
           neighborNode.hCost = this.getManhattanDistance(
             neighborNode,

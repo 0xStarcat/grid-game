@@ -7,8 +7,14 @@ declare global {
       bottomNeighbor: Phaser.Tilemaps.Tile;
       leftNeighbor: Phaser.Tilemaps.Tile;
       rightNeighbor: Phaser.Tilemaps.Tile;
-      neighbors: Object;
-      neighborsArray: Phaser.Tilemaps.Tile[];
+      topLeftNeighbor: Phaser.Tilemaps.Tile;
+      bottomLeftNeighbor: Phaser.Tilemaps.Tile;
+      topRightNeighbor: Phaser.Tilemaps.Tile;
+      bottomRightNeighbor: Phaser.Tilemaps.Tile;
+      neighborsOrthogonal: Object;
+      neighborsOrthogonalArray: Phaser.Tilemaps.Tile[];
+      neighborsAll: Object;
+      neighborsAllArray: Phaser.Tilemaps.Tile[];
       gCost: integer;
       _gCost: integer;
       hCost: integer;
@@ -51,7 +57,7 @@ Object.defineProperty(Phaser.Tilemaps.Tile.prototype, "rightNeighbor", {
   },
 });
 
-Object.defineProperty(Phaser.Tilemaps.Tile.prototype, "neighbors", {
+Object.defineProperty(Phaser.Tilemaps.Tile.prototype, "neighborsOrthogonal", {
   get(this: Phaser.Tilemaps.Tile) {
     return {
       top: this.topNeighbor,
@@ -62,15 +68,83 @@ Object.defineProperty(Phaser.Tilemaps.Tile.prototype, "neighbors", {
   },
 });
 
-Object.defineProperty(Phaser.Tilemaps.Tile.prototype, "neighborsArray", {
+Object.defineProperty(Phaser.Tilemaps.Tile.prototype, "topLeftNeighbor", {
+  get(this: Phaser.Tilemaps.Tile) {
+    const x = this.pixelX - this.width;
+    const y = this.pixelY - this.height;
+    return this.layer.tilemapLayer.getTileAtWorldXY(x, y);
+  },
+});
+
+Object.defineProperty(Phaser.Tilemaps.Tile.prototype, "topRightNeighbor", {
+  get(this: Phaser.Tilemaps.Tile) {
+    const x = this.pixelX + this.width;
+    const y = this.pixelY - this.height;
+    return this.layer.tilemapLayer.getTileAtWorldXY(x, y);
+  },
+});
+
+Object.defineProperty(Phaser.Tilemaps.Tile.prototype, "bottomLeftNeighbor", {
+  get(this: Phaser.Tilemaps.Tile) {
+    const x = this.pixelX - this.width;
+    const y = this.pixelY + this.height;
+    return this.layer.tilemapLayer.getTileAtWorldXY(x, y);
+  },
+});
+
+Object.defineProperty(Phaser.Tilemaps.Tile.prototype, "bottomRightNeighbor", {
+  get(this: Phaser.Tilemaps.Tile) {
+    const x = this.pixelX + this.width;
+    const y = this.pixelY + this.height;
+    return this.layer.tilemapLayer.getTileAtWorldXY(x, y);
+  },
+});
+
+Object.defineProperty(
+  Phaser.Tilemaps.Tile.prototype,
+  "neighborsOrthogonalArray",
+  {
+    get(this: Phaser.Tilemaps.Tile) {
+      // rearranging the order of this array will skew the A* pathfinder's choices
+      // when evaluating neighbors that score equally in a path
+      return [
+        this.topNeighbor,
+        this.rightNeighbor,
+        this.bottomNeighbor,
+        this.leftNeighbor,
+      ];
+    },
+  }
+);
+
+Object.defineProperty(Phaser.Tilemaps.Tile.prototype, "neighborsAll", {
+  get(this: Phaser.Tilemaps.Tile) {
+    return {
+      top: this.topNeighbor,
+      topRight: this.topRightNeighbor,
+      right: this.rightNeighbor,
+      bottomRight: this.bottomRightNeighbor,
+      bottom: this.bottomNeighbor,
+      bottomLeftNeighbor: this.bottomRightNeighbor,
+      left: this.leftNeighbor,
+      topLeft: this.topLeftNeighbor,
+    };
+  },
+});
+
+Object.defineProperty(Phaser.Tilemaps.Tile.prototype, "neighborsAllArray", {
   get(this: Phaser.Tilemaps.Tile) {
     // rearranging the order of this array will skew the A* pathfinder's choices
     // when evaluating neighbors that score equally in a path
     return [
-      this.rightNeighbor,
       this.topNeighbor,
+      this.topRightNeighbor,
+      this.rightNeighbor,
+      this.bottomRightNeighbor,
       this.bottomNeighbor,
+      this.bottomLeftNeighbor,
       this.leftNeighbor,
+      this.topLeftNeighbor,
     ];
   },
 });

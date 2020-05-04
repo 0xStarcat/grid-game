@@ -60,19 +60,19 @@ export default class PathMaker {
       this.mapRenderer.mapTileset.tiles
     );
 
-    this.path = pathfinder.findPath();
+    this.path = pathfinder.findPath(false);
 
     // debug open / closed sets
-    // this.evaluatedSquares.forEach((rect) => rect.destroy());
-    // pathfinder.closedSet.forEach((tile) => {
-    //   this.evaluatedSquares.push(
-    //     this.mapRenderer.addRectangleOutline(
-    //       tile.pixelX,
-    //       tile.pixelY,
-    //       Phaser.Display.Color.ValueToColor("0xFF0000").color
-    //     )
-    //   );
-    // });
+    this.evaluatedSquares.forEach((rect) => rect.destroy());
+    pathfinder.closedSet.forEach((tile) => {
+      this.evaluatedSquares.push(
+        this.mapRenderer.addRectangleOutline(
+          tile.pixelX,
+          tile.pixelY,
+          Phaser.Display.Color.ValueToColor("0xFF0000").color
+        )
+      );
+    });
 
     this.mapRenderer.addPathCircles(this.path);
   }

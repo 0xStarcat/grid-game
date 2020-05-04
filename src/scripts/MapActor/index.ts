@@ -210,6 +210,42 @@ export default class MapActor {
     this.animatedMove(moveX, this.sprite.y, callback);
   }
 
+  animatedMoveUpLeft(callback: Function = () => {}): void {
+    this.sprite.flipX = true;
+
+    const moveY = this.sprite.y - this.scene.mapRenderer.mapTileset.tileHeight;
+    const moveX = this.sprite.x - this.scene.mapRenderer.mapTileset.tileWidth;
+
+    this.animatedMove(moveX, moveY, callback);
+  }
+
+  animatedMoveUpRight(callback: Function = () => {}): void {
+    this.sprite.flipX = false;
+
+    const moveY = this.sprite.y - this.scene.mapRenderer.mapTileset.tileHeight;
+    const moveX = this.sprite.x + this.scene.mapRenderer.mapTileset.tileWidth;
+
+    this.animatedMove(moveX, moveY, callback);
+  }
+
+  animatedMoveDownLeft(callback: Function = () => {}): void {
+    this.sprite.flipX = true;
+
+    const moveY = this.sprite.y + this.scene.mapRenderer.mapTileset.tileHeight;
+    const moveX = this.sprite.x - this.scene.mapRenderer.mapTileset.tileWidth;
+
+    this.animatedMove(moveX, moveY, callback);
+  }
+
+  animatedMoveDownRight(callback: Function = () => {}): void {
+    this.sprite.flipX = false;
+
+    const moveY = this.sprite.y + this.scene.mapRenderer.mapTileset.tileHeight;
+    const moveX = this.sprite.x + this.scene.mapRenderer.mapTileset.tileWidth;
+
+    this.animatedMove(moveX, moveY, callback);
+  }
+
   moveToTile(tile: Phaser.Tilemaps.Tile) {
     this.move(
       tile.pixelX + this.spriteWidth / 2,

@@ -106,6 +106,38 @@ export default class ActionManager {
             this.nextAction.bind(this)
           )
         );
+      } else if (prevTile === tile.topLeftNeighbor) {
+        this.actionQueue.push(
+          new Action(
+            this.scene,
+            this.mapActor.animatedMoveDownRight.bind(this.mapActor),
+            this.nextAction.bind(this)
+          )
+        );
+      } else if (prevTile === tile.topRightNeighbor) {
+        this.actionQueue.push(
+          new Action(
+            this.scene,
+            this.mapActor.animatedMoveDownLeft.bind(this.mapActor),
+            this.nextAction.bind(this)
+          )
+        );
+      } else if (prevTile === tile.bottomLeftNeighbor) {
+        this.actionQueue.push(
+          new Action(
+            this.scene,
+            this.mapActor.animatedMoveUpRight.bind(this.mapActor),
+            this.nextAction.bind(this)
+          )
+        );
+      } else if (prevTile === tile.bottomRightNeighbor) {
+        this.actionQueue.push(
+          new Action(
+            this.scene,
+            this.mapActor.animatedMoveUpLeft.bind(this.mapActor),
+            this.nextAction.bind(this)
+          )
+        );
       }
     });
 

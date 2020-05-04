@@ -24,8 +24,8 @@ export default class MapRenderer {
   addPathCircles(path: Phaser.Tilemaps.Tile[]): void {
     this.clearPathCircles();
     path.forEach((tile) => {
-      // UI elements for 3 dots showing a path through a tile
-      // start from prev tile - middle - end to next tile
+      // UI elements for 2 dots showing a path through a tile
+      // start from prev tile's face then adds middle
       const tileIndex = path.indexOf(tile);
       const prevTile = path[tileIndex - 1];
 
@@ -38,6 +38,14 @@ export default class MapRenderer {
         this.addPathCircle(tile, "down");
       } else if (prevTile === tile.leftNeighbor) {
         this.addPathCircle(tile, "left");
+      } else if (prevTile === tile.topLeftNeighbor) {
+        this.addPathCircle(tile, "upLeft");
+      } else if (prevTile === tile.topRightNeighbor) {
+        this.addPathCircle(tile, "upRight");
+      } else if (prevTile === tile.bottomLeftNeighbor) {
+        this.addPathCircle(tile, "downLeft");
+      } else if (prevTile === tile.bottomRightNeighbor) {
+        this.addPathCircle(tile, "downRight");
       }
 
       this.addPathCircle(tile, "center");
@@ -46,7 +54,16 @@ export default class MapRenderer {
 
   addPathCircle(
     tile: Phaser.Tilemaps.Tile,
-    face: "up" | "right" | "down" | "left" | "center"
+    face:
+      | "up"
+      | "right"
+      | "down"
+      | "left"
+      | "center"
+      | "upRight"
+      | "upLeft"
+      | "downLeft"
+      | "downRight"
   ) {
     // single UI path dot at point
     const centerX = this.mapTileset.tileWidth / 2;
@@ -67,6 +84,18 @@ export default class MapRenderer {
     } else if (face === "left") {
       circleX = tile.pixelX;
       circleY = tile.pixelY + centerY;
+    } else if (face === "upRight") {
+      circleX = tile.pixelX + this.mapTileset.tileWidth;
+      circleY = tile.pixelY;
+    } else if (face === "upLeft") {
+      circleX = tile.pixelX;
+      circleY = tile.pixelY;
+    } else if (face === "downRight") {
+      circleX = tile.pixelX + this.mapTileset.tileWidth;
+      circleY = tile.pixelY + this.mapTileset.tileHeight;
+    } else if (face === "downLeft") {
+      circleX = tile.pixelX;
+      circleY = tile.pixelY + this.mapTileset.tileHeight;
     } else {
       // center
       circleX = tile.pixelX + centerX;
