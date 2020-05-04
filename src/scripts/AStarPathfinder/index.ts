@@ -72,7 +72,8 @@ export default class AStarPathfinder {
         }
 
         const movementCostToNeighbor =
-          currentNode.gCost + this.getGridDistance(currentNode, neighborNode);
+          currentNode.gCost + this.getGridDistance(currentNode, neighborNode) ||
+          0; // TODO - override Tile prototype constructor and set gCost default value
 
         if (
           movementCostToNeighbor < neighborNode.gCost ||
@@ -80,16 +81,18 @@ export default class AStarPathfinder {
         ) {
           // calculates fCost for later evaluation via gCost + hCost
 
-          // Non-manhattan heuristic
-          // neighborNode.gCost = movementCostToNeighbor;
-          // neighborNode.hCost = this.getGridDistance(neighborNode, this.end);
-
-          // Manhattan Heuristic (bigger / better zigzags)
-          neighborNode.gCost = this.getGridDistance(this.start, neighborNode);
-          neighborNode.hCost = this.getManhattanDistance(
-            neighborNode,
-            this.end
-          );
+          if (diagonals) {
+            // Diagonal heuristic
+            neighborNode.gCost = movementCostToNeighbor;
+            neighborNode.hCost = this.getGridDistance(neighborNode, this.end);
+          } else {
+            // Manhattan Heuristic (non-diagonal)
+            neighborNode.gCost = this.getGridDistance(this.start, neighborNode);
+            neighborNode.hCost = this.getManhattanDistance(
+              neighborNode,
+              this.end
+            );
+          }
 
           // sets the pathParent so the path can be retraced once found
           neighborNode.pathParent = currentNode;
@@ -126,7 +129,7 @@ export default class AStarPathfinder {
     return D * (dx + dy);
   }
 
-  // non-diagonal distance between 2 nodes along x and y axis
+  // distance between 2 nodes along x and y axis w/ weighted diagonal vs orthogonal movement
   getGridDistance(node1: Phaser.Tilemaps.Tile, endNode: Phaser.Tilemaps.Tile) {
     const distanceX = Math.abs(node1.x - endNode.x);
     const distanceY = Math.abs(node1.y - endNode.y);
